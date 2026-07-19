@@ -3,7 +3,8 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-	<NcDialog v-if="open"
+	<NcDialog
+		v-if="open"
 		:name="t('dbdoctor', 'DB Doctor settings')"
 		:open="open"
 		size="large"
@@ -19,44 +20,51 @@
 				</p>
 
 				<div class="settings-dialog__grid">
-					<NcTextField :value.sync="form.host"
+					<NcTextField
+						v-model="form.host"
 						:label="t('dbdoctor', 'Host')"
 						placeholder="localhost" />
-					<NcTextField :value.sync="form.portText"
+					<NcTextField
+						v-model="form.portText"
 						:label="t('dbdoctor', 'Port')"
 						placeholder="3306"
 						type="number" />
-					<NcSelect v-model="form.driver"
+					<NcSelect
+						v-model="form.driver"
 						:options="driverOptions"
-						:input-label="t('dbdoctor', 'Driver')" />
-					<NcTextField :value.sync="form.user"
+						:inputLabel="t('dbdoctor', 'Driver')" />
+					<NcTextField
+						v-model="form.user"
 						:label="t('dbdoctor', 'User')"
 						placeholder="dbdoctor" />
-					<NcTextField :value.sync="form.database"
+					<NcTextField
+						v-model="form.database"
 						:label="t('dbdoctor', 'Database')"
 						placeholder="nextcloud" />
-					<NcPasswordField :value.sync="form.password"
+					<NcPasswordField
+						v-model="form.password"
 						:label="passwordLabel"
 						:placeholder="passwordPlaceholder" />
 				</div>
 
 				<div class="settings-dialog__actions">
-					<NcButton type="secondary" :disabled="testing" @click="onTest">
+					<NcButton variant="secondary" :disabled="testing" @click="onTest">
 						<template #icon>
 							<NcLoadingIcon v-if="testing" :size="20" />
 							<IconConnection v-else :size="20" />
 						</template>
 						{{ t('dbdoctor', 'Test connection') }}
 					</NcButton>
-					<NcButton type="primary" :disabled="saving" @click="onSaveOverride">
+					<NcButton variant="primary" :disabled="saving" @click="onSaveOverride">
 						<template #icon>
 							<NcLoadingIcon v-if="saving" :size="20" />
 							<IconCheck v-else :size="20" />
 						</template>
 						{{ t('dbdoctor', 'Save') }}
 					</NcButton>
-					<NcButton v-if="settingsStore.settings.override.passwordSet"
-						type="tertiary"
+					<NcButton
+						v-if="settingsStore.settings.override.passwordSet"
+						variant="tertiary"
 						@click="onClearPassword">
 						{{ t('dbdoctor', 'Forget stored password') }}
 					</NcButton>
@@ -102,7 +110,7 @@
 		</div>
 
 		<template #actions>
-			<NcButton type="tertiary" @click="$emit('update:open', false)">
+			<NcButton variant="tertiary" @click="$emit('update:open', false)">
 				{{ t('dbdoctor', 'Close') }}
 			</NcButton>
 		</template>
@@ -110,12 +118,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
-
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import { translate as t } from '@nextcloud/l10n'
 import { confirmPassword } from '@nextcloud/password-confirmation'
-import '@nextcloud/password-confirmation/style.css'
+import { onMounted, reactive, ref, watch } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
@@ -124,9 +130,10 @@ import NcSelect from '@nextcloud/vue/components/NcSelect'
 import NcTextField from '@nextcloud/vue/components/NcTextField'
 import IconCheck from 'vue-material-design-icons/Check.vue'
 import IconConnection from 'vue-material-design-icons/LanConnect.vue'
-
 import { testConnection } from '../api/client'
 import { useSettingsStore } from '../stores/settings'
+
+import '@nextcloud/password-confirmation/style.css'
 
 const props = defineProps<{ open: boolean }>()
 
@@ -139,7 +146,7 @@ const form = reactive({
 	portText: '',
 	user: '',
 	database: '',
-	driver: { id: 'pdo_mysql', label: 'MySQL / MariaDB' } as { id: string; label: string },
+	driver: { id: 'pdo_mysql', label: 'MySQL / MariaDB' } as { id: string, label: string },
 	password: '',
 })
 
@@ -153,11 +160,11 @@ const passwordPlaceholder = ref('')
 
 const testing = ref(false)
 const saving = ref(false)
-const testResult = ref<{ ok: boolean; message: string } | null>(null)
+const testResult = ref<{ ok: boolean, message: string } | null>(null)
 
 function syncForm(): void {
 	const s = settingsStore.settings
-	if (!s) return
+	if (!s) { return }
 	form.host = s.override.host
 	form.portText = s.override.port > 0 ? String(s.override.port) : ''
 	form.user = s.override.user
@@ -236,7 +243,7 @@ async function onClearPassword(): Promise<void> {
 watch(
 	() => props.open,
 	async (isOpen) => {
-		if (!isOpen) return
+		if (!isOpen) { return }
 		if (settingsStore.settings === null) {
 			await settingsStore.load()
 		}

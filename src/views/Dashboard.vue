@@ -16,7 +16,8 @@
 				</div>
 			</div>
 			<div class="dashboard__header-actions">
-				<NcButton type="primary"
+				<NcButton
+					variant="primary"
 					:disabled="checks.running || isUnsupported"
 					@click="onRun">
 					<template #icon>
@@ -25,7 +26,8 @@
 					</template>
 					{{ checks.running ? t('dbdoctor', 'Checking…') : t('dbdoctor', 'Run check now') }}
 				</NcButton>
-				<NcButton type="tertiary"
+				<NcButton
+					variant="tertiary"
 					:title="t('dbdoctor', 'DB Doctor settings')"
 					:aria-label="t('dbdoctor', 'DB Doctor settings')"
 					@click="settingsOpen = true">
@@ -37,24 +39,27 @@
 		</header>
 
 		<!-- ── Unsupported flavour: short-circuit ─────────────────── -->
-		<EmptyOrUnsupported v-if="isUnsupported"
+		<EmptyOrUnsupported
+			v-if="isUnsupported"
 			:title="t('dbdoctor', 'Unsupported database')"
 			:description="t('dbdoctor', 'DB Doctor only checks MySQL, MariaDB, and PostgreSQL. Your Nextcloud is configured with a different database.')"
-			mascot-state="concerned"
+			mascotState="concerned"
 			:cta="null" />
 
 		<!-- ── Empty state (no run yet, supported flavour) ────────── -->
-		<EmptyOrUnsupported v-else-if="checks.latest === null && !checks.running"
+		<EmptyOrUnsupported
+			v-else-if="checks.latest === null && !checks.running"
 			:title="t('dbdoctor', 'Ready for your first check-up?')"
 			:description="t('dbdoctor', 'I will look at your database\'s settings and tell you if anything looks off. You can keep clicking around — this will only take a moment.')"
-			mascot-state="idle"
+			mascotState="idle"
 			:cta="t('dbdoctor', 'Start the check')"
 			@action="onRun" />
 
 		<template v-else>
 			<!-- ── Top row: ScoreCard + quick stats ───────────────── -->
 			<div class="dashboard__top-row">
-				<ScoreCard :score="checks.latest?.score ?? null"
+				<ScoreCard
+					:score="checks.latest?.score ?? null"
 					:grade="checks.latest?.grade ?? null"
 					:running="checks.running"
 					:counts="checks.latest?.counts" />
@@ -79,21 +84,24 @@
 						<div class="dashboard__stat">
 							<dt>{{ t('dbdoctor', 'Findings') }}</dt>
 							<dd>
-								<button type="button"
+								<button
+									type="button"
 									class="dashboard__pill dashboard__pill--alert"
 									:class="{ 'dashboard__pill--active': severityFilter === 'alert' }"
 									:title="t('dbdoctor', 'Show only alerts')"
 									@click="toggleSeverity('alert')">
 									{{ checks.latest?.counts.alert ?? 0 }} {{ t('dbdoctor', 'alerts') }}
 								</button>
-								<button type="button"
+								<button
+									type="button"
 									class="dashboard__pill dashboard__pill--warning"
 									:class="{ 'dashboard__pill--active': severityFilter === 'warning' }"
 									:title="t('dbdoctor', 'Show only warnings')"
 									@click="toggleSeverity('warning')">
 									{{ checks.latest?.counts.warning ?? 0 }} {{ t('dbdoctor', 'warnings') }}
 								</button>
-								<button type="button"
+								<button
+									type="button"
 									class="dashboard__pill dashboard__pill--notice"
 									:class="{ 'dashboard__pill--active': severityFilter === 'notice' }"
 									:title="t('dbdoctor', 'Show only notices')"
@@ -139,7 +147,8 @@
 			</div>
 
 			<!-- ── Restart-required notice ─────────────────────────── -->
-			<button v-if="restartCount > 0"
+			<button
+				v-if="restartCount > 0"
 				type="button"
 				class="dashboard__restart-note"
 				:class="{ 'dashboard__restart-note--active': restartOnly }"
@@ -158,7 +167,8 @@
 
 			<!-- ── Status filter strip + search ────────────────────── -->
 			<nav v-if="allRules.length > 0" class="dashboard__filters" aria-label="Filter rules by status">
-				<button v-for="f in filters"
+				<button
+					v-for="f in filters"
 					:key="f.id"
 					type="button"
 					class="dashboard__filter"
@@ -171,7 +181,8 @@
 					<span class="dashboard__filter-count">{{ f.count }}</span>
 				</button>
 				<div class="dashboard__search">
-					<NcTextField :value.sync="searchQuery"
+					<NcTextField
+						v-model="searchQuery"
 						type="search"
 						:label="t('dbdoctor', 'Search rules')">
 						<template #icon>
@@ -183,7 +194,8 @@
 
 			<!-- ── Full overview: every rule, grouped by category ───── -->
 			<section v-if="checks.latest" class="dashboard__rules">
-				<div v-for="group in groupedRules"
+				<div
+					v-for="group in groupedRules"
 					:key="group.category"
 					class="dashboard__category">
 					<header class="dashboard__category-header">
@@ -203,13 +215,14 @@
 						</span>
 					</header>
 					<TransitionGroup name="dashboard-fade" tag="div" class="dashboard__rules-list">
-						<RuleCard v-for="rule in group.rules"
+						<RuleCard
+							v-for="rule in group.rules"
 							:key="rule.id"
 							:rule="rule"
 							:series="checks.ruleSeries[rule.id]"
 							@apply="onApply"
 							@snippet="onSnippet"
-							@request-series="checks.loadSeries" />
+							@requestSeries="checks.loadSeries" />
 					</TransitionGroup>
 				</div>
 
@@ -230,16 +243,19 @@
 		</template>
 
 		<!-- ── Dialogs ────────────────────────────────────────────── -->
-		<ApplyDialog v-if="applyTarget"
+		<ApplyDialog
+			v-if="applyTarget"
 			:open="applyOpen"
 			:rule="applyTarget"
 			@update:open="(v) => (applyOpen = v)"
 			@apply="(rule, resolve) => onConfirmApply(rule, resolve)" />
-		<SnippetDialog v-if="snippetTarget"
+		<SnippetDialog
+			v-if="snippetTarget"
 			:open="snippetOpen"
 			:rule="snippetTarget"
 			@update:open="(v) => (snippetOpen = v)" />
-		<SettingsDialog :open="settingsOpen"
+		<SettingsDialog
+			:open="settingsOpen"
 			@update:open="(v) => (settingsOpen = v)" />
 
 		<!-- Confetti for grade A — fires once per A run via store flag.
@@ -251,25 +267,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
+import type { RevertedFix, RuleResult, RuleStatus, Severity } from '../api/types'
 
 import { showError } from '@nextcloud/dialogs'
 import { loadState } from '@nextcloud/initial-state'
-import { translate as t, translatePlural as n } from '@nextcloud/l10n'
+import { translatePlural as n, translate as t } from '@nextcloud/l10n'
+import { confirmPassword } from '@nextcloud/password-confirmation'
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import NcTextField from '@nextcloud/vue/components/NcTextField'
-import IconHeartPulse from 'vue-material-design-icons/HeartPulse.vue'
 import IconCog from 'vue-material-design-icons/Cog.vue'
+import IconHeartPulse from 'vue-material-design-icons/HeartPulse.vue'
 import IconMagnify from 'vue-material-design-icons/Magnify.vue'
 import IconRestart from 'vue-material-design-icons/Restart.vue'
 import IconRestore from 'vue-material-design-icons/Restore.vue'
-
-import type { RevertedFix, RuleResult, RuleStatus, Severity } from '../api/types'
-import * as api from '../api/client'
-import { confirmPassword } from '@nextcloud/password-confirmation'
-import '@nextcloud/password-confirmation/style.css'
-
 import AppIcon from '../components/AppIcon.vue'
 import EmptyOrUnsupported from '../components/EmptyOrUnsupported.vue'
 import LatencyChart from '../components/LatencyChart.vue'
@@ -277,8 +289,11 @@ import MetricTiles from '../components/MetricTiles.vue'
 import RuleCard from '../components/RuleCard.vue'
 import ScoreCard from '../components/ScoreCard.vue'
 import ScoreTrend from '../components/ScoreTrend.vue'
+import * as api from '../api/client'
 import { useChecksStore } from '../stores/checks'
 import { formatBytes, timeAgo } from '../utils/formatters'
+
+import '@nextcloud/password-confirmation/style.css'
 
 // The dialogs and the confetti overlay are rarely (or never) shown in a
 // typical visit, so they're split out of the entry chunk and fetched on
@@ -318,8 +333,8 @@ const flavourLabel = computed(() => {
 })
 
 const tagline = computed(() => {
-	if (checks.latest === null) return t('dbdoctor', 'Your database, but with a regular check-up.')
-	if (checks.running) return t('dbdoctor', 'Listening to your database…')
+	if (checks.latest === null) { return t('dbdoctor', 'Your database, but with a regular check-up.') }
+	if (checks.running) { return t('dbdoctor', 'Listening to your database…') }
 	return ({
 		A: t('dbdoctor', 'Healthy! Keep doing what you\'re doing.'),
 		B: t('dbdoctor', 'Looking good — small tweaks could make it better.'),
@@ -343,7 +358,7 @@ const severityFilter = ref<Severity | null>(null)
 const restartOnly = ref(false)
 const searchQuery = ref('')
 
-const filters = computed<{ id: FilterId; label: string; count: number }[]>(() => {
+const filters = computed<{ id: FilterId, label: string, count: number }[]>(() => {
 	const c = (s: RuleStatus) => allRules.value.filter((r) => r.status === s).length
 	return [
 		{ id: 'all', label: t('dbdoctor', 'All'), count: allRules.value.length },
@@ -374,8 +389,7 @@ const filteredRules = computed<RuleResult[]>(() => {
 	}
 	const q = searchQuery.value.trim().toLowerCase()
 	if (q !== '') {
-		rules = rules.filter((r) =>
-			r.name.toLowerCase().includes(q)
+		rules = rules.filter((r) => r.name.toLowerCase().includes(q)
 			|| r.id.toLowerCase().includes(q)
 			|| r.category.toLowerCase().includes(q))
 	}
@@ -415,10 +429,10 @@ const statusOrder: Record<RuleStatus, number> = { fail: 0, ok: 1, skipped: 2 }
 const sevWeight: Record<string, number> = { alert: 0, warning: 1, notice: 2 }
 function ruleSort(a: RuleResult, b: RuleResult): number {
 	const ord = statusOrder[a.status] - statusOrder[b.status]
-	if (ord !== 0) return ord
+	if (ord !== 0) { return ord }
 	if (a.status === 'fail' && b.status === 'fail') {
 		const sev = (sevWeight[a.severity] ?? 9) - (sevWeight[b.severity] ?? 9)
-		if (sev !== 0) return sev
+		if (sev !== 0) { return sev }
 	}
 	return a.name.localeCompare(b.name)
 }
@@ -470,7 +484,7 @@ function onSnippet(rule: RuleResult): void {
 
 async function onConfirmApply(
 	rule: RuleResult,
-	resolve: (r: { success: boolean; oldValue: string | null; newValue: string | null; error?: string }) => void,
+	resolve: (r: { success: boolean, oldValue: string | null, newValue: string | null, error?: string }) => void,
 ): Promise<void> {
 	if (!rule.apply) {
 		resolve({ success: false, oldValue: null, newValue: null, error: 'No apply descriptor for rule.' })

@@ -4,16 +4,19 @@
 -->
 <template>
 	<div class="heartbeat" :style="cssVars" aria-hidden="true">
-		<svg class="heartbeat__svg"
+		<svg
+			class="heartbeat__svg"
 			viewBox="0 0 220 60"
 			preserveAspectRatio="none">
 			<!-- The ECG line is a single repeating polyline.  We draw it
 				 twice and translate the second copy by the width of the
 				 viewBox so the animation loops without a visible seam. -->
 			<g class="heartbeat__scroller">
-				<polyline class="heartbeat__line"
+				<polyline
+					class="heartbeat__line"
 					:points="ecgPoints" />
-				<polyline class="heartbeat__line"
+				<polyline
+					class="heartbeat__line"
 					:points="ecgPoints"
 					transform="translate(220 0)" />
 			</g>
@@ -22,9 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import type { Grade } from '../utils/grade'
 
-import { bpmFor, bpmForLatency, colorVarFor, type Grade } from '../utils/grade'
+import { computed } from 'vue'
+import { bpmFor, bpmForLatency, colorVarFor } from '../utils/grade'
 
 const props = withDefaults(defineProps<{
 	grade: Grade | null

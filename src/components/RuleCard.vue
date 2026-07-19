@@ -3,7 +3,8 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-	<article ref="root"
+	<article
+		ref="root"
 		class="rule-card"
 		:class="[
 			`rule-card--${rule.status}`,
@@ -77,23 +78,26 @@
 		</dl>
 
 		<footer v-if="rule.status === 'fail' || rule.docUrl" class="rule-card__actions">
-			<NcButton v-if="rule.status === 'fail' && rule.apply && rule.apply.runtimeWritable"
-				type="primary"
+			<NcButton
+				v-if="rule.status === 'fail' && rule.apply && rule.apply.runtimeWritable"
+				variant="primary"
 				@click="$emit('apply', rule)">
 				<template #icon>
 					<IconFlash :size="20" />
 				</template>
 				{{ t('dbdoctor', 'Apply now') }}
 			</NcButton>
-			<NcButton v-if="rule.status === 'fail' && rule.apply"
-				type="secondary"
+			<NcButton
+				v-if="rule.status === 'fail' && rule.apply"
+				variant="secondary"
 				@click="$emit('snippet', rule)">
 				<template #icon>
 					<IconCodeJson :size="20" />
 				</template>
 				{{ t('dbdoctor', 'Show config snippet') }}
 			</NcButton>
-			<a v-if="rule.docUrl"
+			<a
+				v-if="rule.docUrl"
 				:href="rule.docUrl"
 				class="rule-card__doc-link"
 				target="_blank"
@@ -103,23 +107,24 @@
 			</a>
 		</footer>
 
-		<Sparkline v-if="series && rule.status === 'fail'"
+		<Sparkline
+			v-if="series && rule.status === 'fail'"
 			class="rule-card__sparkline"
 			:series="series" />
 	</article>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { translate as t } from '@nextcloud/l10n'
-import NcButton from '@nextcloud/vue/components/NcButton'
-import IconFlash from 'vue-material-design-icons/Flash.vue'
-import IconCodeJson from 'vue-material-design-icons/CodeJson.vue'
-import IconOpenInNew from 'vue-material-design-icons/OpenInNew.vue'
+import type { RuleResult, RuleStatus, SeriesPoint, Severity } from '../api/types'
 
-import type { RuleResult, SeriesPoint, Severity, RuleStatus } from '../api/types'
-import { formatValue } from '../utils/formatters'
+import { translate as t } from '@nextcloud/l10n'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import NcButton from '@nextcloud/vue/components/NcButton'
+import IconCodeJson from 'vue-material-design-icons/CodeJson.vue'
+import IconFlash from 'vue-material-design-icons/Flash.vue'
+import IconOpenInNew from 'vue-material-design-icons/OpenInNew.vue'
 import Sparkline from './Sparkline.vue'
+import { formatValue } from '../utils/formatters'
 
 const props = defineProps<{
 	rule: RuleResult

@@ -13,13 +13,15 @@
 			</span>
 		</header>
 		<div class="score-trend__plot">
-			<svg class="score-trend__svg"
+			<svg
+				class="score-trend__svg"
 				:viewBox="`0 0 ${W} ${H}`"
 				preserveAspectRatio="none"
 				role="img"
 				:aria-label="ariaLabel">
 				<!-- Reference lines at 0 / 50 / 100 -->
-				<line v-for="mark in [0, 50, 100]"
+				<line
+					v-for="mark in [0, 50, 100]"
 					:key="mark"
 					class="score-trend__grid"
 					:x1="0"
@@ -49,11 +51,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { translate as t, translatePlural as n } from '@nextcloud/l10n'
-
-import * as api from '../api/client'
 import type { ScorePoint } from '../api/types'
+
+import { translatePlural as n, translate as t } from '@nextcloud/l10n'
+import { computed, onMounted, ref, watch } from 'vue'
+import * as api from '../api/client'
 import { useChecksStore } from '../stores/checks'
 import logger from '../utils/logger'
 
@@ -97,8 +99,7 @@ const linePath = computed<string>(() => series.value
 	.map((p, i) => `${i === 0 ? 'M' : 'L'} ${xs.value[i].toFixed(1)} ${y(p.score).toFixed(1)}`)
 	.join(' '))
 
-const areaPath = computed<string>(() =>
-	`${linePath.value} L ${W} ${H - PAD} L 0 ${H - PAD} Z`)
+const areaPath = computed<string>(() => `${linePath.value} L ${W} ${H - PAD} L 0 ${H - PAD} Z`)
 
 const delta = computed<number>(() => {
 	const s = series.value
@@ -107,7 +108,7 @@ const delta = computed<number>(() => {
 
 const deltaText = computed<string>(() => {
 	const d = delta.value
-	if (d === 0) return t('dbdoctor', 'stable')
+	if (d === 0) { return t('dbdoctor', 'stable') }
 	return d > 0 ? `▲ +${d}` : `▼ ${d}`
 })
 

@@ -4,11 +4,13 @@
 -->
 <template>
 	<div class="sparkline" :title="title">
-		<svg v-if="series.length > 0"
+		<svg
+			v-if="series.length > 0"
 			class="sparkline__svg"
 			:viewBox="`0 0 ${days} 1`"
 			preserveAspectRatio="none">
-			<rect v-for="(cell, i) in cells"
+			<rect
+				v-for="(cell, i) in cells"
 				:key="i"
 				class="sparkline__cell"
 				:class="`sparkline__cell--${cell.status}`"
@@ -24,11 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import type { SeriesPoint } from '../api/types'
 
 import { translate as t } from '@nextcloud/l10n'
-
-import type { SeriesPoint } from '../api/types'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
 	series: SeriesPoint[]

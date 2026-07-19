@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import axios from '@nextcloud/axios'
-import { generateOcsUrl } from '@nextcloud/router'
-
 import type {
 	AuditRow,
 	LiveMetrics,
@@ -16,8 +13,11 @@ import type {
 	Settings,
 } from './types'
 
+import axios from '@nextcloud/axios'
+import { generateOcsUrl } from '@nextcloud/router'
+
 interface OcsEnvelope<T> {
-	ocs: { meta: unknown; data: T }
+	ocs: { meta: unknown, data: T }
 }
 
 function url(path: string): string {
@@ -100,7 +100,7 @@ export async function pingDatabase(): Promise<PingResult> {
 }
 
 export async function getHistory(ruleId: string, days: number = 30): Promise<SeriesPoint[]> {
-	const res = await axios.get<OcsEnvelope<{ ruleId: string; days: number; series: SeriesPoint[] }>>(
+	const res = await axios.get<OcsEnvelope<{ ruleId: string, days: number, series: SeriesPoint[] }>>(
 		url('/check/history'),
 		{ ...REQUEST_OPTS, params: { ruleId, days } },
 	)
@@ -108,7 +108,7 @@ export async function getHistory(ruleId: string, days: number = 30): Promise<Ser
 }
 
 export async function getScoreHistory(days: number = 30): Promise<ScorePoint[]> {
-	const res = await axios.get<OcsEnvelope<{ days: number; series: ScorePoint[] }>>(
+	const res = await axios.get<OcsEnvelope<{ days: number, series: ScorePoint[] }>>(
 		url('/check/score-history'),
 		{ ...REQUEST_OPTS, params: { days } },
 	)
@@ -175,8 +175,8 @@ export async function testConnection(payload: {
 	password: string
 	database: string
 	driver: 'pdo_mysql' | 'pdo_pgsql'
-}): Promise<{ ok: boolean; message: string }> {
-	const res = await axios.post<OcsEnvelope<{ ok: boolean; message: string }>>(
+}): Promise<{ ok: boolean, message: string }> {
+	const res = await axios.post<OcsEnvelope<{ ok: boolean, message: string }>>(
 		url('/settings/test-connection'),
 		payload,
 		REQUEST_OPTS,

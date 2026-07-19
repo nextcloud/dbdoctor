@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import type { LiveMetrics } from '../api/types'
+
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-
 import { getLiveMetrics } from '../api/client'
-import type { LiveMetrics } from '../api/types'
 import logger from '../utils/logger'
 
 /**
@@ -39,14 +39,14 @@ export const useMetricsStore = defineStore('dbdoctor/metrics', () => {
 
 	const connectionRatio = computed<number | null>(() => {
 		const m = latest.value
-		if (m === null || m.connections.max <= 0) return null
+		if (m === null || m.connections.max <= 0) { return null }
 		return Math.min(1, m.connections.used / m.connections.max)
 	})
 	const cacheHitRatio = computed<number | null>(() => latest.value?.cacheHitRatio ?? null)
 	const currentQps = computed<number | null>(() => (qps.value.length ? qps.value[qps.value.length - 1] : null))
 
 	async function tick(): Promise<void> {
-		if (inflight) return
+		if (inflight) { return }
 		inflight = true
 		try {
 			const m = await getLiveMetrics()
@@ -61,7 +61,7 @@ export const useMetricsStore = defineStore('dbdoctor/metrics', () => {
 				// Guard against counter resets (server restart) and gaps.
 				const rate = dt > 0 && dCount >= 0 ? dCount / dt : 0
 				qps.value.push(Math.round(rate))
-				while (qps.value.length > MAX_QPS_SAMPLES) qps.value.shift()
+				while (qps.value.length > MAX_QPS_SAMPLES) { qps.value.shift() }
 			}
 			prevCounter = m.throughput.counter
 			prevAt = now
@@ -73,7 +73,7 @@ export const useMetricsStore = defineStore('dbdoctor/metrics', () => {
 	}
 
 	function start(): void {
-		if (timer !== null) return
+		if (timer !== null) { return }
 		void tick()
 		timer = window.setInterval(() => { void tick() }, POLL_INTERVAL_MS)
 	}
@@ -86,9 +86,8 @@ export const useMetricsStore = defineStore('dbdoctor/metrics', () => {
 	}
 
 	function onVisibility(): void {
-		if (subscribers.value === 0) return
-		if (document.hidden) stop()
-		else start()
+		if (subscribers.value === 0) { return }
+		if (document.hidden) { stop() } else { start() }
 	}
 
 	function subscribe(): void {
@@ -98,7 +97,7 @@ export const useMetricsStore = defineStore('dbdoctor/metrics', () => {
 				document.addEventListener('visibilitychange', onVisibility)
 				visibilityBound = true
 			}
-			if (!document.hidden) start()
+			if (!document.hidden) { start() }
 		}
 	}
 

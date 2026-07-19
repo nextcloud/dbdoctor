@@ -4,7 +4,8 @@
 -->
 <template>
 	<div class="category-tabs" role="tablist">
-		<button v-for="cat in categories"
+		<button
+			v-for="cat in categories"
 			:key="cat.id"
 			type="button"
 			role="tab"
@@ -13,7 +14,8 @@
 			:aria-selected="cat.id === modelValue ? 'true' : 'false'"
 			@click="$emit('update:modelValue', cat.id)">
 			<span class="category-tabs__label">{{ cat.label }}</span>
-			<span v-if="cat.failCount > 0"
+			<span
+				v-if="cat.failCount > 0"
 				class="category-tabs__badge"
 				:title="t('dbdoctor', '{n} failing', { n: cat.failCount })">
 				{{ cat.failCount }}
@@ -27,7 +29,7 @@ import { translate as t } from '@nextcloud/l10n'
 
 defineProps<{
 	modelValue: string
-	categories: { id: string; label: string; failCount: number }[]
+	categories: { id: string, label: string, failCount: number }[]
 }>()
 
 defineEmits<{

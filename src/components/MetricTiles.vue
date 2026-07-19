@@ -11,7 +11,8 @@
 				{{ metrics.cacheHitRatio !== null ? formatPercent(metrics.cacheHitRatio * 100) : '—' }}
 			</span>
 			<div class="metric-tiles__bar">
-				<div class="metric-tiles__bar-fill"
+				<div
+					class="metric-tiles__bar-fill"
 					:class="cacheClass"
 					:style="{ width: `${(metrics.cacheHitRatio ?? 0) * 100}%` }" />
 			</div>
@@ -24,7 +25,8 @@
 				{{ metrics.latest ? `${metrics.latest.connections.used} / ${metrics.latest.connections.max}` : '—' }}
 			</span>
 			<div class="metric-tiles__bar">
-				<div class="metric-tiles__bar-fill"
+				<div
+					class="metric-tiles__bar-fill"
 					:class="connClass"
 					:style="{ width: `${(metrics.connectionRatio ?? 0) * 100}%` }" />
 			</div>
@@ -38,7 +40,8 @@
 					{{ metrics.currentQps !== null ? metrics.currentQps.toLocaleString() : '—' }}
 				</span>
 			</div>
-			<svg class="metric-tiles__spark"
+			<svg
+				class="metric-tiles__spark"
 				:viewBox="`0 0 ${SPARK_W} ${SPARK_H}`"
 				preserveAspectRatio="none"
 				role="img"
@@ -51,9 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { translate as t } from '@nextcloud/l10n'
-
+import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { useMetricsStore } from '../stores/metrics'
 import { formatPercent } from '../utils/formatters'
 
@@ -65,18 +67,18 @@ onBeforeUnmount(() => metrics.unsubscribe())
 // Cache hit: green when healthy, warning mid, alert when poor.
 const cacheClass = computed(() => {
 	const r = metrics.cacheHitRatio
-	if (r === null) return 'metric-tiles__value--muted'
-	if (r >= 0.99) return 'metric-tiles__tone--good'
-	if (r >= 0.95) return 'metric-tiles__tone--warn'
+	if (r === null) { return 'metric-tiles__value--muted' }
+	if (r >= 0.99) { return 'metric-tiles__tone--good' }
+	if (r >= 0.95) { return 'metric-tiles__tone--warn' }
 	return 'metric-tiles__tone--bad'
 })
 
 // Connections: alert as we approach the ceiling.
 const connClass = computed(() => {
 	const r = metrics.connectionRatio
-	if (r === null) return 'metric-tiles__value--muted'
-	if (r < 0.7) return 'metric-tiles__tone--good'
-	if (r < 0.9) return 'metric-tiles__tone--warn'
+	if (r === null) { return 'metric-tiles__value--muted' }
+	if (r < 0.7) { return 'metric-tiles__tone--good' }
+	if (r < 0.9) { return 'metric-tiles__tone--warn' }
 	return 'metric-tiles__tone--bad'
 })
 
@@ -86,7 +88,7 @@ const SPARK_H = 40
 
 const linePath = computed<string>(() => {
 	const s = metrics.qps
-	if (s.length < 2) return ''
+	if (s.length < 2) { return '' }
 	const max = Math.max(1, ...s)
 	const stepX = SPARK_W / (s.length - 1)
 	return s.map((v, i) => {
@@ -97,7 +99,7 @@ const linePath = computed<string>(() => {
 })
 
 const areaPath = computed<string>(() => {
-	if (linePath.value === '') return ''
+	if (linePath.value === '') { return '' }
 	return `${linePath.value} L ${SPARK_W} ${SPARK_H} L 0 ${SPARK_H} Z`
 })
 </script>

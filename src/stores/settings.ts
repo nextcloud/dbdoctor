@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import type { AuditRow, Settings } from '../api/types'
+
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
 import * as api from '../api/client'
-import type { AuditRow, Settings } from '../api/types'
 import logger from '../utils/logger'
 
 export const useSettingsStore = defineStore('dbdoctor/settings', () => {

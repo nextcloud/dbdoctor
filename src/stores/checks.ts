@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import type { RunResult, SeriesPoint } from '../api/types'
+
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-
 import * as api from '../api/client'
-import type { RunResult, SeriesPoint } from '../api/types'
 import logger from '../utils/logger'
 
 /**
@@ -40,7 +40,7 @@ export const useChecksStore = defineStore('dbdoctor/checks', () => {
 	}
 
 	async function runNow(): Promise<void> {
-		if (running.value) return
+		if (running.value) { return }
 		running.value = true
 		error.value = null
 		const previousGrade = latest.value?.grade ?? null
@@ -79,7 +79,7 @@ export const useChecksStore = defineStore('dbdoctor/checks', () => {
 		ruleId: string,
 		variable: string,
 		value: string,
-	): Promise<{ success: boolean; oldValue: string | null; newValue: string | null; error?: string }> {
+	): Promise<{ success: boolean, oldValue: string | null, newValue: string | null, error?: string }> {
 		const result = await api.applyChange(ruleId, variable, value)
 		if (result.success) {
 			// Re-run so the score reflects the change.  We don't await

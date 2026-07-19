@@ -5,7 +5,6 @@
 
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-
 import { pingDatabase } from '../api/client'
 import logger from '../utils/logger'
 
@@ -50,7 +49,7 @@ export const useLatencyStore = defineStore('dbdoctor/latency', () => {
 	async function tick(): Promise<void> {
 		// Don't pile up requests if the previous one is still in flight
 		// — better to drop a sample than queue them.
-		if (inflight) return
+		if (inflight) { return }
 		inflight = true
 		try {
 			const r = await pingDatabase()
@@ -65,13 +64,13 @@ export const useLatencyStore = defineStore('dbdoctor/latency', () => {
 			samples.value.push(Number.NaN)
 			logger.debug('latency ping failed', e)
 		} finally {
-			while (samples.value.length > MAX_SAMPLES) samples.value.shift()
+			while (samples.value.length > MAX_SAMPLES) { samples.value.shift() }
 			inflight = false
 		}
 	}
 
 	function start(): void {
-		if (timer !== null) return
+		if (timer !== null) { return }
 		void tick()
 		timer = window.setInterval(() => { void tick() }, POLL_INTERVAL_MS)
 	}
@@ -84,7 +83,7 @@ export const useLatencyStore = defineStore('dbdoctor/latency', () => {
 	}
 
 	function onVisibility(): void {
-		if (subscribers.value === 0) return
+		if (subscribers.value === 0) { return }
 		if (document.hidden) {
 			stop()
 		} else {
@@ -93,13 +92,13 @@ export const useLatencyStore = defineStore('dbdoctor/latency', () => {
 	}
 
 	function bindVisibility(): void {
-		if (visibilityBound) return
+		if (visibilityBound) { return }
 		document.addEventListener('visibilitychange', onVisibility)
 		visibilityBound = true
 	}
 
 	function unbindVisibility(): void {
-		if (!visibilityBound) return
+		if (!visibilityBound) { return }
 		document.removeEventListener('visibilitychange', onVisibility)
 		visibilityBound = false
 	}
@@ -113,7 +112,7 @@ export const useLatencyStore = defineStore('dbdoctor/latency', () => {
 		subscribers.value++
 		if (subscribers.value === 1) {
 			bindVisibility()
-			if (!document.hidden) start()
+			if (!document.hidden) { start() }
 		}
 	}
 

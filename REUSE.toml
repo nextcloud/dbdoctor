@@ -18,7 +18,7 @@ path = [
     "tsconfig.json",
     "vite.config.mjs",
     "vitest.config.ts",
-    "eslint.config.js",
+    "eslint.config.mjs",
     "stylelint.config.cjs",
     "composer.json",
     "composer.lock",

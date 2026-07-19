@@ -11,13 +11,14 @@ export type MascotState = 'happy' | 'idle' | 'concerned' | 'checking'
  * Derive a grade letter from a numeric 0-100 score.  Mirrors the
  * server-side {@see \OCA\DBDoctor\Service\Score::gradeFor} so
  * client-side fallbacks and server responses agree.
+ *
  * @param score
  */
 export function gradeFor(score: number): Grade {
-	if (score >= 90) return 'A'
-	if (score >= 80) return 'B'
-	if (score >= 70) return 'C'
-	if (score >= 60) return 'D'
+	if (score >= 90) { return 'A' }
+	if (score >= 80) { return 'B' }
+	if (score >= 70) { return 'C' }
+	if (score >= 60) { return 'D' }
 	return 'F'
 }
 
@@ -25,6 +26,7 @@ export function gradeFor(score: number): Grade {
  * The CSS custom-property used to colour the score / heartbeat for
  * a given grade.  Indirection through CSS variables keeps the
  * grade colours editable in tokens.scss.
+ *
  * @param grade
  */
 export function colorVarFor(grade: Grade): string {
@@ -43,6 +45,7 @@ export function colorVarFor(grade: Grade): string {
  * can fall below AA — most visibly the dark-red F on a dark theme.
  * These variants are blended with the theme's main text colour in
  * tokens.scss so they stay legible on both light and dark surfaces.
+ *
  * @param grade
  */
 export function readableColorVarFor(grade: Grade): string {
@@ -59,6 +62,7 @@ export function readableColorVarFor(grade: Grade): string {
  * Beats per minute used by the Heartbeat component.  The worse the
  * grade, the faster (and more alarming) the heartbeat — a soft visual
  * metaphor that doesn't fight the data.
+ *
  * @param grade
  */
 export function bpmFor(grade: Grade): number {
@@ -81,10 +85,11 @@ export function bpmFor(grade: Grade): number {
  * The shape is `50 + 30 * log10(ms + 1)` clamped to [50, 160].  log10
  * keeps the response sane across the multi-decade range we care about
  * (sub-millisecond local DBs through hundreds-of-ms remote).
+ *
  * @param latencyMs
  */
 export function bpmForLatency(latencyMs: number): number {
-	if (!Number.isFinite(latencyMs) || latencyMs < 0) return 60
+	if (!Number.isFinite(latencyMs) || latencyMs < 0) { return 60 }
 	const bpm = 50 + 30 * Math.log10(latencyMs + 1)
 	return Math.max(50, Math.min(160, bpm))
 }
@@ -93,13 +98,14 @@ export function bpmForLatency(latencyMs: number): number {
  * Mascot expression for a given grade + running state.  When a check
  * is running we always show the "checking" mascot so the user gets
  * immediate feedback that something's happening.
+ *
  * @param grade
  * @param running
  */
 export function mascotFor(grade: Grade | null, running: boolean): MascotState {
-	if (running) return 'checking'
-	if (grade === null) return 'idle'
-	if (grade === 'A' || grade === 'B') return 'happy'
-	if (grade === 'F') return 'concerned'
+	if (running) { return 'checking' }
+	if (grade === null) { return 'idle' }
+	if (grade === 'A' || grade === 'B') { return 'happy' }
+	if (grade === 'F') { return 'concerned' }
 	return 'idle'
 }

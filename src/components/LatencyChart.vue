@@ -39,13 +39,15 @@
 			 inside it — so the axis labels and the empty-state hint are
 			 HTML overlays positioned over the plot instead. -->
 		<div class="latency-chart__plot">
-			<svg class="latency-chart__svg"
+			<svg
+				class="latency-chart__svg"
 				:viewBox="`0 0 ${VIEW_W} ${VIEW_H}`"
 				preserveAspectRatio="none"
 				role="img"
 				:aria-label="t('dbdoctor', 'Database latency over the last 60 seconds')">
 				<defs>
-					<linearGradient id="dbd-latency-fill"
+					<linearGradient
+						id="dbd-latency-fill"
 						x1="0"
 						y1="0"
 						x2="0"
@@ -59,7 +61,8 @@
 					 y-domain).  Re-rendered when the y-scale shifts so
 					 the axis never lies about the data. -->
 				<g class="latency-chart__grid">
-					<line v-for="g in gridLines"
+					<line
+						v-for="g in gridLines"
 						:key="g.value"
 						:x1="0"
 						:x2="VIEW_W"
@@ -69,25 +72,29 @@
 
 				<!-- Filled area under the curve.  Goes to the floor at the
 					 last data X so the area "scrolls" with the line. -->
-				<path v-if="areaPath"
+				<path
+					v-if="areaPath"
 					class="latency-chart__area"
 					:d="areaPath" />
 
 				<!-- The line itself.  CSS animates the d attribute, giving
 					 the appearance of smooth scroll-by-one each tick. -->
-				<path v-if="linePath"
+				<path
+					v-if="linePath"
 					class="latency-chart__line"
 					:d="linePath" />
 
 				<!-- Static dot marking the newest sample. -->
-				<circle v-if="lastPoint"
+				<circle
+					v-if="lastPoint"
 					class="latency-chart__dot"
 					:cx="lastPoint.x"
 					:cy="lastPoint.y"
 					r="3" />
 			</svg>
 
-			<span v-for="g in gridLines"
+			<span
+				v-for="g in gridLines"
 				:key="g.value"
 				class="latency-chart__grid-label"
 				:style="{ top: `${(g.y / VIEW_H) * 100}%` }">
@@ -102,9 +109,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { translate as t } from '@nextcloud/l10n'
-
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useLatencyStore } from '../stores/latency'
 
 // ── Sampling source ────────────────────────────────────────────────
@@ -147,7 +153,7 @@ const PAD_BOTTOM = 18
 // look like a spike.  Re-derived on every render.
 const yMax = computed<number>(() => {
 	const finite = samples.value.filter((v) => Number.isFinite(v))
-	if (finite.length === 0) return 50
+	if (finite.length === 0) { return 50 }
 	const top = Math.max(...finite) * 1.25
 	return Math.max(20, top)
 })
@@ -156,7 +162,7 @@ const yMax = computed<number>(() => {
 // oldest sample, plotted at the left edge; the line grows to the
 // right as samples arrive and reaches the right edge once the buffer
 // holds MAX_SAMPLES of them.
-function pointFor(i: number, n: number, value: number): { x: number; y: number } {
+function pointFor(i: number, n: number, value: number): { x: number, y: number } {
 	const x = VIEW_W * (i / (MAX_SAMPLES - 1))
 	const range = VIEW_H - PAD_TOP - PAD_BOTTOM
 	const y = PAD_TOP + range - (value / yMax.value) * range
@@ -168,7 +174,7 @@ function pointFor(i: number, n: number, value: number): { x: number; y: number }
 // than being smoothed away.
 const linePath = computed<string>(() => {
 	const n = samples.value.length
-	if (n === 0) return ''
+	if (n === 0) { return '' }
 	let d = ''
 	let pendingMove = true
 	for (let i = 0; i < n; i++) {
@@ -186,23 +192,23 @@ const linePath = computed<string>(() => {
 
 const areaPath = computed<string>(() => {
 	const n = samples.value.length
-	if (n === 0) return ''
+	if (n === 0) { return '' }
 	const floor = VIEW_H - PAD_BOTTOM
-	const segments: { x: number; y: number }[][] = []
-	let current: { x: number; y: number }[] = []
+	const segments: { x: number, y: number }[][] = []
+	let current: { x: number, y: number }[] = []
 	for (let i = 0; i < n; i++) {
 		const v = samples.value[i]
 		if (!Number.isFinite(v)) {
-			if (current.length) segments.push(current)
+			if (current.length) { segments.push(current) }
 			current = []
 			continue
 		}
 		current.push(pointFor(i, n, v))
 	}
-	if (current.length) segments.push(current)
-	if (segments.length === 0) return ''
+	if (current.length) { segments.push(current) }
+	if (segments.length === 0) { return '' }
 	return segments.map((seg) => {
-		if (seg.length === 0) return ''
+		if (seg.length === 0) { return '' }
 		const first = seg[0]
 		const last = seg[seg.length - 1]
 		const head = `M ${first.x.toFixed(1)} ${floor.toFixed(1)} L ${first.x.toFixed(1)} ${first.y.toFixed(1)}`
@@ -212,18 +218,18 @@ const areaPath = computed<string>(() => {
 	}).join(' ')
 })
 
-const lastPoint = computed<{ x: number; y: number } | null>(() => {
+const lastPoint = computed<{ x: number, y: number } | null>(() => {
 	const n = samples.value.length
-	if (n === 0) return null
+	if (n === 0) { return null }
 	const v = samples.value[n - 1]
-	if (!Number.isFinite(v)) return null
+	if (!Number.isFinite(v)) { return null }
 	return pointFor(n - 1, n, v)
 })
 
 // Three quartile gridlines (25 / 50 / 75 % of the y-domain).  Plus
 // labels rendered against the right edge so they don't fight the
 // curve in the centre.
-interface GridLine { y: number; value: number }
+interface GridLine { y: number, value: number }
 const gridLines = computed<GridLine[]>(() => {
 	const range = VIEW_H - PAD_TOP - PAD_BOTTOM
 	const max = yMax.value
@@ -238,13 +244,13 @@ const gridLines = computed<GridLine[]>(() => {
 const finiteSamples = computed<number[]>(() => samples.value.filter((v) => Number.isFinite(v)))
 const current = computed<number | null>(() => {
 	const n = samples.value.length
-	if (n === 0) return null
+	if (n === 0) { return null }
 	const v = samples.value[n - 1]
 	return Number.isFinite(v) ? v : null
 })
 const avg = computed<number | null>(() => {
 	const f = finiteSamples.value
-	if (f.length === 0) return null
+	if (f.length === 0) { return null }
 	return f.reduce((s, v) => s + v, 0) / f.length
 })
 const minVal = computed<number | null>(() => {
@@ -257,9 +263,9 @@ const maxVal = computed<number | null>(() => {
 })
 
 function formatMs(v: number | null): string {
-	if (v === null || !Number.isFinite(v)) return '—'
-	if (v < 1) return v.toFixed(2) + ' ms'
-	if (v < 10) return v.toFixed(1) + ' ms'
+	if (v === null || !Number.isFinite(v)) { return '—' }
+	if (v < 1) { return v.toFixed(2) + ' ms' }
+	if (v < 10) { return v.toFixed(1) + ' ms' }
 	return Math.round(v) + ' ms'
 }
 
@@ -277,10 +283,10 @@ const currentLabel = computed<string>(() => {
 // local network; remote DBs will frequently sit in the "ok" band.
 const bandClass = computed<string>(() => {
 	const v = current.value
-	if (v === null) return 'latency-chart__current--unknown'
-	if (v < 5) return 'latency-chart__current--good'
-	if (v < 25) return 'latency-chart__current--ok'
-	if (v < 100) return 'latency-chart__current--slow'
+	if (v === null) { return 'latency-chart__current--unknown' }
+	if (v < 5) { return 'latency-chart__current--good' }
+	if (v < 25) { return 'latency-chart__current--ok' }
+	if (v < 100) { return 'latency-chart__current--slow' }
 	return 'latency-chart__current--bad'
 })
 </script>

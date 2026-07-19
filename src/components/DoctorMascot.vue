@@ -4,42 +4,50 @@
 -->
 <template>
 	<div class="mascot" :class="`mascot--${state}`" aria-hidden="true">
-		<svg class="mascot__svg"
+		<svg
+			class="mascot__svg"
 			viewBox="0 0 96 96"
 			xmlns="http://www.w3.org/2000/svg">
 			<!-- Soft underglow -->
-			<circle cx="48"
+			<circle
+				cx="48"
 				cy="52"
 				r="34"
 				class="mascot__halo" />
 
 			<!-- Coat: a friendly white doctor's coat with collar V -->
-			<path d="M14 90 Q14 60 32 56 L48 64 L64 56 Q82 60 82 90 Z"
+			<path
+				d="M14 90 Q14 60 32 56 L48 64 L64 56 Q82 60 82 90 Z"
 				class="mascot__coat" />
 			<path d="M48 64 L40 90" class="mascot__coat-line" />
 			<path d="M48 64 L56 90" class="mascot__coat-line" />
 
 			<!-- Hair, back layer: shoulder-length, flowing onto the
 				 coat on both sides of the face. -->
-			<path d="M48 13 Q28 13 26 33 Q25 45 29 58 Q31 63 36 62 Q34 50 35 40 Q36 32 41 27 L55 27 Q60 32 61 40 Q62 50 60 62 Q65 63 67 58 Q71 45 70 33 Q68 13 48 13 Z"
+			<path
+				d="M48 13 Q28 13 26 33 Q25 45 29 58 Q31 63 36 62 Q34 50 35 40 Q36 32 41 27 L55 27 Q60 32 61 40 Q62 50 60 62 Q65 63 67 58 Q71 45 70 33 Q68 13 48 13 Z"
 				class="mascot__hair" />
 
 			<!-- Head -->
-			<circle cx="48"
+			<circle
+				cx="48"
 				cy="38"
 				r="18"
 				class="mascot__face" />
 
 			<!-- Hair, front layer: side-swept bangs over the crown. -->
-			<path d="M31 33 Q32 19 48 18 Q64 19 65 33 Q58 26 46 26 Q37 27 33 31 Q31.5 32 31 33 Z"
+			<path
+				d="M31 33 Q32 19 48 18 Q64 19 65 33 Q58 26 46 26 Q37 27 33 31 Q31.5 32 31 33 Z"
 				class="mascot__hair" />
 
 			<!-- Eyes -->
-			<circle :cx="leftEye.x"
+			<circle
+				:cx="leftEye.x"
 				:cy="leftEye.y"
 				r="2.4"
 				class="mascot__eye" />
-			<circle :cx="rightEye.x"
+			<circle
+				:cx="rightEye.x"
 				:cy="rightEye.y"
 				r="2.4"
 				class="mascot__eye" />
@@ -51,11 +59,13 @@
 				 gently in the "checking" state via CSS animation. -->
 			<g class="mascot__stetho">
 				<path d="M40 64 Q42 78 52 80 Q62 82 64 70" class="mascot__tube" />
-				<circle cx="64"
+				<circle
+					cx="64"
 					cy="70"
 					r="5"
 					class="mascot__bell" />
-				<circle cx="64"
+				<circle
+					cx="64"
 					cy="70"
 					r="2"
 					class="mascot__bell-inner" />
@@ -71,9 +81,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
 import type { MascotState } from '../utils/grade'
+
+import { computed } from 'vue'
 
 const props = defineProps<{ state: MascotState }>()
 
@@ -92,16 +102,16 @@ const rightEye = computed(() => ({
 // to the right; the curvature carries the emotion.
 const mouthPath = computed(() => {
 	switch (props.state) {
-	case 'happy':
-		return 'M40 47 Q48 54 56 47'
-	case 'concerned':
-		return 'M40 49 Q48 44 56 49'
-	case 'checking':
+		case 'happy':
+			return 'M40 47 Q48 54 56 47'
+		case 'concerned':
+			return 'M40 49 Q48 44 56 49'
+		case 'checking':
 		// A little circle: "hmm let me listen…"
-		return 'M44 47 Q48 50 52 47 Q48 44 44 47 Z'
-	case 'idle':
-	default:
-		return 'M42 47 Q48 49 54 47'
+			return 'M44 47 Q48 50 52 47 Q48 44 44 47 Z'
+		case 'idle':
+		default:
+			return 'M42 47 Q48 49 54 47'
 	}
 })
 </script>

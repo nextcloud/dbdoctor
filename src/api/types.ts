@@ -82,9 +82,9 @@ export interface Settings {
 // ── Live metrics (dashboard tiles) ──────────────────────────────────
 
 export interface LiveMetrics {
-	connections: { used: number; max: number }
+	connections: { used: number, max: number }
 	cacheHitRatio: number | null
-	throughput: { counter: number; label: string }
+	throughput: { counter: number, label: string }
 	threadsRunning: number
 }
 

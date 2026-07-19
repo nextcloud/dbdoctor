@@ -4,7 +4,8 @@
 -->
 <template>
 	<div v-if="visible" class="confetti" aria-hidden="true">
-		<span v-for="(p, i) in pieces"
+		<span
+			v-for="(p, i) in pieces"
 			:key="i"
 			class="confetti__piece"
 			:style="p.style" />
@@ -53,7 +54,7 @@ const pieces = computed<Piece[]>(() => {
 // lazily with trigger already true (the dashboard only mounts the
 // overlay while a celebration is pending).
 watch(() => props.trigger, (next) => {
-	if (!next) return
+	if (!next) { return }
 	// Respect reduced-motion: emit `done` immediately so the parent
 	// can clear the trigger flag, but don't render flying pieces.
 	const reduce = typeof window !== 'undefined'
@@ -64,7 +65,7 @@ watch(() => props.trigger, (next) => {
 		return
 	}
 	visible.value = true
-	if (timer !== null) clearTimeout(timer)
+	if (timer !== null) { clearTimeout(timer) }
 	timer = window.setTimeout(() => {
 		visible.value = false
 		emit('done')

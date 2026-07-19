@@ -10,15 +10,15 @@ const APP = 'dbdoctor'
 // already wires to its log surfaces in dev builds.
 export default {
 	debug(msg: string, data?: unknown): void {
-		if (typeof console !== 'undefined') console.debug(`[${APP}] ${msg}`, data ?? '')
+		if (typeof console !== 'undefined') { console.debug(`[${APP}] ${msg}`, data ?? '') }
 	},
 	info(msg: string, data?: unknown): void {
-		if (typeof console !== 'undefined') console.info(`[${APP}] ${msg}`, data ?? '')
+		if (typeof console !== 'undefined') { console.info(`[${APP}] ${msg}`, data ?? '') }
 	},
 	warn(msg: string, data?: unknown): void {
-		if (typeof console !== 'undefined') console.warn(`[${APP}] ${msg}`, data ?? '')
+		if (typeof console !== 'undefined') { console.warn(`[${APP}] ${msg}`, data ?? '') }
 	},
 	error(msg: string, data?: unknown): void {
-		if (typeof console !== 'undefined') console.error(`[${APP}] ${msg}`, data ?? '')
+		if (typeof console !== 'undefined') { console.error(`[${APP}] ${msg}`, data ?? '') }
 	},
 }

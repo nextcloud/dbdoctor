@@ -4,7 +4,6 @@
  */
 
 import { describe, expect, it } from 'vitest'
-
 import { bpmForLatency, gradeFor, mascotFor } from './grade'
 
 describe('gradeFor', () => {

@@ -3,7 +3,8 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-	<NcDialog v-if="open"
+	<NcDialog
+		v-if="open"
 		:name="t('dbdoctor', 'Apply database change?')"
 		:open="open"
 		size="normal"
@@ -44,11 +45,12 @@
 		</div>
 
 		<template #actions>
-			<NcButton type="tertiary" @click="onUpdateOpen(false)">
+			<NcButton variant="tertiary" @click="onUpdateOpen(false)">
 				{{ result?.success ? t('dbdoctor', 'Close') : t('dbdoctor', 'Cancel') }}
 			</NcButton>
-			<NcButton v-if="!result?.success"
-				type="primary"
+			<NcButton
+				v-if="!result?.success"
+				variant="primary"
 				:disabled="busy"
 				@click="onApply">
 				<template #icon>
@@ -62,15 +64,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import type { RuleResult } from '../api/types'
 
 import { translate as t } from '@nextcloud/l10n'
+import { ref, watch } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import IconFlash from 'vue-material-design-icons/Flash.vue'
-
-import type { RuleResult } from '../api/types'
 
 const props = defineProps<{
 	open: boolean
@@ -83,12 +84,12 @@ const emit = defineEmits<{
 		rule: RuleResult,
 		// resolver lets us await the result inline so the dialog stays
 		// open and renders the outcome instead of dismissing on click.
-		resolve: (r: { success: boolean; oldValue: string | null; newValue: string | null; error?: string }) => void,
+		resolve: (r: { success: boolean, oldValue: string | null, newValue: string | null, error?: string }) => void,
 	]
 }>()
 
 const busy = ref(false)
-const result = ref<{ success: boolean; oldValue: string | null; newValue: string | null; error?: string } | null>(null)
+const result = ref<{ success: boolean, oldValue: string | null, newValue: string | null, error?: string } | null>(null)
 
 // Reset state when the dialog re-opens for a different rule.
 watch(() => props.open, (next) => {

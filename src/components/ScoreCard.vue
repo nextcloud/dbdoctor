@@ -13,11 +13,13 @@
 				 so ring and digits roll in together on every refresh. -->
 			<div class="score-card__gauge">
 				<svg class="score-card__gauge-svg" viewBox="0 0 120 120" aria-hidden="true">
-					<circle class="score-card__gauge-track"
+					<circle
+						class="score-card__gauge-track"
 						cx="60"
 						cy="60"
 						:r="GAUGE_RADIUS" />
-					<circle class="score-card__gauge-arc"
+					<circle
+						class="score-card__gauge-arc"
 						cx="60"
 						cy="60"
 						:r="GAUGE_RADIUS"
@@ -29,7 +31,8 @@
 				</svg>
 
 				<!-- One-shot ripple behind the letter on a real change. -->
-				<div v-if="rippleKey > 0"
+				<div
+					v-if="rippleKey > 0"
 					:key="`ripple-${rippleKey}`"
 					class="score-card__ripple"
 					:style="{ '--ripple-color': gradeColor } as CSSPropertiesWithVars" />
@@ -37,7 +40,8 @@
 				<div class="score-card__gauge-center">
 					<!-- Grade letter with morph transition. -->
 					<Transition name="grade-morph" mode="out-in">
-						<div :key="displayGrade"
+						<div
+							:key="displayGrade"
 							class="score-card__letter"
 							:style="{ color: gradeColor }"
 							aria-hidden="true">
@@ -52,7 +56,8 @@
 
 				<!-- Floating signed delta ("+5" / "-3") after a change. -->
 				<Transition name="score-delta">
-					<span v-if="deltaLabel !== null"
+					<span
+						v-if="deltaLabel !== null"
 						:key="`delta-${rippleKey}`"
 						class="score-card__delta"
 						:class="delta !== null && delta > 0 ? 'score-card__delta--up' : 'score-card__delta--down'">
@@ -75,12 +80,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
-import { translate as t } from '@nextcloud/l10n'
+import type { Grade } from '../utils/grade'
 
-import { mascotFor, readableColorVarFor, type Grade } from '../utils/grade'
+import { translate as t } from '@nextcloud/l10n'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import DoctorMascot from './DoctorMascot.vue'
+import { mascotFor, readableColorVarFor } from '../utils/grade'
 
 // Allow CSS custom properties on inline `style` typings without
 // fighting the strict CSSProperties shape.
@@ -90,7 +96,7 @@ const props = withDefaults(defineProps<{
 	score: number | null
 	grade: Grade | null
 	running: boolean
-	counts?: { alert: number; warning: number; notice: number; total: number }
+	counts?: { alert: number, warning: number, notice: number, total: number }
 }>(), {
 	score: null,
 	grade: null,
@@ -123,11 +129,11 @@ const gaugeDashOffset = computed<number>(() => {
 
 // One-line status under the "Database health" caption.
 const captionSub = computed<string>(() => {
-	if (props.running) return t('dbdoctor', 'Running check…')
-	if (props.score === null) return t('dbdoctor', 'No check run yet')
+	if (props.running) { return t('dbdoctor', 'Running check…') }
+	if (props.score === null) { return t('dbdoctor', 'No check run yet') }
 	const c = props.counts
 	const issues = c.alert + c.warning + c.notice
-	if (issues === 0) return t('dbdoctor', 'No issues found')
+	if (issues === 0) { return t('dbdoctor', 'No issues found') }
 	return t('dbdoctor', '{n} issues to review', { n: issues })
 })
 
@@ -147,12 +153,12 @@ const delta = ref<number | null>(null)
 let deltaResetTimer: number | null = null
 
 const deltaLabel = computed<string | null>(() => {
-	if (delta.value === null || delta.value === 0) return null
+	if (delta.value === null || delta.value === 0) { return null }
 	return (delta.value > 0 ? '+' : '') + String(delta.value)
 })
 
 watch(() => props.score, (next, prev) => {
-	if (tween !== null) cancelAnimationFrame(tween)
+	if (tween !== null) { cancelAnimationFrame(tween) }
 	if (next === null) {
 		animatedScore.value = 0
 		return
@@ -179,7 +185,7 @@ watch(() => props.score, (next, prev) => {
 	if (prev !== undefined && prev !== null && next !== prev) {
 		rippleKey.value++
 		delta.value = next - prev
-		if (deltaResetTimer !== null) window.clearTimeout(deltaResetTimer)
+		if (deltaResetTimer !== null) { window.clearTimeout(deltaResetTimer) }
 		// Match the CSS `score-delta-leave` duration so the floater is
 		// removed from the DOM right after the leave animation ends.
 		deltaResetTimer = window.setTimeout(() => {
@@ -190,12 +196,12 @@ watch(() => props.score, (next, prev) => {
 }, { immediate: true })
 
 onBeforeUnmount(() => {
-	if (tween !== null) cancelAnimationFrame(tween)
-	if (deltaResetTimer !== null) window.clearTimeout(deltaResetTimer)
+	if (tween !== null) { cancelAnimationFrame(tween) }
+	if (deltaResetTimer !== null) { window.clearTimeout(deltaResetTimer) }
 })
 
 const srText = computed(() => {
-	if (props.score === null) return 'No check has been run yet.'
+	if (props.score === null) { return 'No check has been run yet.' }
 	const g = displayGrade.value
 	const c = props.counts
 	return `Database health grade ${g}. ${props.score} of 100. `
