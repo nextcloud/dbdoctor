@@ -64,6 +64,7 @@ path = [
     "img/app.svg",
     "img/app-color.svg",
     "img/mascot/**",
+    "screenshot/**",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Nextcloud GmbH and Nextcloud contributors"
