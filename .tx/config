@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Transifex client configuration — standard Nextcloud app layout.
+# The transifex sync (via nextcloud/docker-ci translation tooling)
+# extracts source strings into translationfiles/templates/dbdoctor.pot
+# and writes per-language .po files that are compiled into l10n/*.js
+# and l10n/*.json.
+
+[main]
+host = https://www.transifex.com
+lang_map = bg_BG: bg, cs_CZ: cs, fi_FI: fi, hu_HU: hu, nb_NO: nb, sk_SK: sk, th_TH: th, ja_JP: ja
+
+[o:nextcloud:p:nextcloud:r:dbdoctor]
+file_filter = translationfiles/<lang>/dbdoctor.po
+source_file = translationfiles/templates/dbdoctor.pot
+source_lang = en
+type       = PO

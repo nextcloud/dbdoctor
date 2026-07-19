@@ -1,0 +1,108 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  # PHP tests run with the app placed inside a Nextcloud server checkout,
+  # because the unit tests resolve OCP + 3rdparty from the surrounding
+  # server tree (see tests/bootstrap.php).
+  php:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+    steps:
+      - name: Check out Nextcloud server
+        uses: actions/checkout@v4
+        with:
+          repository: nextcloud/server
+          submodules: true
+          path: server
+
+      - name: Check out the app
+        uses: actions/checkout@v4
+        with:
+          path: server/apps/dbdoctor
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+
+      - name: Install Composer dependencies
+        working-directory: server/apps/dbdoctor
+        run: composer install --no-progress --prefer-dist
+
+      - name: PHP syntax check
+        working-directory: server/apps/dbdoctor
+        run: find lib -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: PHPUnit
+        working-directory: server/apps/dbdoctor
+        run: composer test
+
+  # Psalm is informational for now: the Nextcloud-schema probe references
+  # a couple of private OC\DB classes that psalm's OCP stubs don't ship.
+  psalm:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check out Nextcloud server
+        uses: actions/checkout@v4
+        with:
+          repository: nextcloud/server
+          submodules: true
+          path: server
+      - name: Check out the app
+        uses: actions/checkout@v4
+        with:
+          path: server/apps/dbdoctor
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Install Composer dependencies
+        working-directory: server/apps/dbdoctor
+        run: composer install --no-progress --prefer-dist
+      - name: Psalm
+        working-directory: server/apps/dbdoctor
+        run: composer psalm
+
+  # The frontend toolchain is self-contained and runs standalone.
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the app
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

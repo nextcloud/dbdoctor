@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!--
+  - SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>dbdoctor</id>
+	<name>DB Doctor</name>
+	<summary>Audit your MySQL, MariaDB, or PostgreSQL configuration for performance and reliability issues.</summary>
+	<description><![CDATA[
+DB Doctor checks the database powering your Nextcloud against best-practice rules ported from phpMyAdmin's advisor, plus a curated set of PostgreSQL checks.
+
+* Get an at-a-glance health grade A through F with a numeric score
+* See plain-English recommendations for every rule that fails
+* Apply safe runtime fixes with one click, or copy a config snippet for permanent changes
+* Watch your score climb over time with a 30-day trend chart and per-rule sparklines
+* Weekly automatic check-ups notify admins when the database health declines
+* Health grade surfaced in Settings → Overview, and scriptable via `occ dbdoctor:check`
+* Nextcloud-specific checks: missing indices / columns / primary keys, utf8mb4 charset, InnoDB engine, and READ-COMMITTED isolation
+
+DB Doctor is read-only by default, admin-only, and never phones home.
+
+The MySQL/MariaDB rule set is ported from phpMyAdmin (GPL-2.0-or-later, compatible upward). The PostgreSQL rules are original to DB Doctor.
+	]]></description>
+
+	<version>1.0.0</version>
+	<licence>AGPL-3.0-or-later</licence>
+	<author mail="frank@nextcloud.com">Frank Karlitschek</author>
+
+	<namespace>DBDoctor</namespace>
+
+	<documentation>
+		<admin>https://github.com/nextcloud/dbdoctor#readme</admin>
+	</documentation>
+
+	<category>monitoring</category>
+	<category>tools</category>
+
+	<website>https://github.com/nextcloud/dbdoctor</website>
+	<bugs>https://github.com/nextcloud/dbdoctor/issues</bugs>
+	<repository type="git">https://github.com/nextcloud/dbdoctor.git</repository>
+
+	<dependencies>
+		<php min-version="8.1"/>
+		<nextcloud min-version="33" max-version="35"/>
+	</dependencies>
+
+	<background-jobs>
+		<job>OCA\DBDoctor\BackgroundJob\PruneHistory</job>
+		<job>OCA\DBDoctor\BackgroundJob\ScheduledCheck</job>
+	</background-jobs>
+
+	<commands>
+		<command>OCA\DBDoctor\Command\Check</command>
+	</commands>
+
+	<settings>
+		<admin-section>OCA\DBDoctor\Settings\AdminSection</admin-section>
+		<admin>OCA\DBDoctor\Settings\Admin</admin>
+	</settings>
+</info>

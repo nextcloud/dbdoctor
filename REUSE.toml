@@ -1,0 +1,70 @@
+# SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+version = 1
+SPDX-PackageName = "dbdoctor"
+SPDX-PackageSupplier = "Nextcloud GmbH <info@nextcloud.com>"
+SPDX-PackageDownloadLocation = "https://github.com/nextcloud/dbdoctor"
+
+[[annotations]]
+path = [
+    ".gitattributes",
+    ".gitignore",
+    ".editorconfig",
+    ".github/**",
+    ".tx/config",
+    ".l10nignore",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "vite.config.mjs",
+    "vitest.config.ts",
+    "eslint.config.js",
+    "stylelint.config.cjs",
+    "composer.json",
+    "composer.lock",
+    "psalm.xml",
+    "Makefile",
+    "tests/phpunit.xml",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "none"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = [
+    "l10n/**.js",
+    "l10n/**.json",
+    "js/**.mjs",
+    "js/**.mjs.map",
+    "js/**.js",
+    "js/**.js.map",
+    "css/**.css",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# The MySQL / MariaDB rule data in this file is ported from
+# phpMyAdmin's Advisor (https://www.phpmyadmin.net/), originally
+# released under GPL-2.0-or-later.  GPL-2.0-or-later is upward-
+# compatible with AGPL-3.0 via the "or-later" clause, so the combined
+# work is distributed under AGPL-3.0-or-later.  Both copyrights are
+# retained.
+[[annotations]]
+path = "lib/Advisory/RuleSet/Mysql.php"
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+    "2026 Nextcloud GmbH and Nextcloud contributors",
+    "phpMyAdmin contributors (advisor rule data, GPL-2.0-or-later)",
+]
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = [
+    "img/app.svg",
+    "img/app-color.svg",
+    "img/mascot/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"

@@ -1,0 +1,121 @@
+/*!
+ * SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+// ── Grade colour palette ──────────────────────────────────────
+//
+// Each grade gets a primary color used for the score-card glow,
+// the heartbeat stroke, and the rule severity dots.  Built on top
+// of Nextcloud's semantic palette so DBDoctor inherits theming.
+//
+// Declared on `body`, NOT `:root` — this is load-bearing.  A custom
+// property substitutes its var() references at the element it is
+// declared on.  Nextcloud injects the dark palette at `:root` behind
+// a `prefers-color-scheme: dark` media query, but the theme the user
+// actually selected is applied via `[data-theme-*]` on `<body>`.
+// Tokens declared at `:root` therefore bake in the OS colour scheme
+// (dark cards on a light page when the OS is dark); declared on
+// `body` they resolve after the selected theme's overrides.  `body`
+// also covers NcDialog/NcModal content, which teleports to `<body>`.
+body {
+	--dbd-grade-a: var(--color-success, #46ba61);
+	--dbd-grade-b: #7bbf3a;
+	--dbd-grade-c: var(--color-warning, #f4a261);
+	--dbd-grade-d: #e58a3b;
+	--dbd-grade-f: var(--color-error, #e9322d);
+
+	// Severity rail dots in rule cards.
+	--dbd-severity-alert:   var(--color-error,   #e9322d);
+	--dbd-severity-warning: var(--color-warning, #f4a261);
+	--dbd-severity-notice:  var(--color-primary-element, #0082c9);
+
+	// Text-on-tinted-background variants.  The base grade colours are
+	// tuned for accents (dots, borders, sparklines) on the page
+	// background; using them as actual text on top of a low-opacity
+	// tint of themselves produces poor contrast on dark themes (the
+	// most-reported case: bright green text on a 16%-tint over a near-
+	// black background).  We blend each base with the theme's primary
+	// text colour so the result anchors to whatever the theme picked
+	// for "readable on this background".  60 / 40 keeps the colour
+	// signal dominant while pulling enough luminance from the text
+	// colour to clear AA on both light and dark themes.
+	--dbd-grade-a-readable:           color-mix(in srgb, var(--dbd-grade-a)           60%, var(--color-main-text) 40%);
+	--dbd-grade-b-readable:           color-mix(in srgb, var(--dbd-grade-b)           60%, var(--color-main-text) 40%);
+	--dbd-grade-c-readable:           color-mix(in srgb, var(--dbd-grade-c)           60%, var(--color-main-text) 40%);
+	--dbd-grade-d-readable:           color-mix(in srgb, var(--dbd-grade-d)           60%, var(--color-main-text) 40%);
+	--dbd-grade-f-readable:           color-mix(in srgb, var(--dbd-grade-f)           60%, var(--color-main-text) 40%);
+	--dbd-severity-alert-readable:    color-mix(in srgb, var(--dbd-severity-alert)    60%, var(--color-main-text) 40%);
+	--dbd-severity-warning-readable:  color-mix(in srgb, var(--dbd-severity-warning)  60%, var(--color-main-text) 40%);
+	--dbd-severity-notice-readable:   color-mix(in srgb, var(--dbd-severity-notice)   60%, var(--color-main-text) 40%);
+
+	// Card styling.  Surfaces are derived from the --color-main-background
+	// / --color-main-text PAIR so a surface and the text on it always come
+	// from the same theme — legible in light, dark and high-contrast.
+	//   raised  = subtly lighter/darker than the page (cards)
+	//   sunken  = a touch further (chips, skipped rows, empty states)
+	--dbd-surface-raised: color-mix(in srgb, var(--color-main-text) 4%, var(--color-main-background));
+	--dbd-surface-sunken: color-mix(in srgb, var(--color-main-text) 9%, var(--color-main-background));
+	--dbd-card-radius: var(--border-radius-large);
+	--dbd-card-bg: var(--dbd-surface-raised);
+	--dbd-card-border: color-mix(in srgb, var(--color-main-text) 14%, var(--color-main-background));
+	--dbd-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+
+	// Heartbeat speed varies per grade — set inline by Heartbeat.vue.
+	--dbd-heartbeat-bpm: 60;
+}
+
+// ── Legacy-style resets ───────────────────────────────────────
+//
+// Nextcloud's core apps.css ships global description-list styling
+// aimed at legacy settings markup — dl { padding: 12px 0 },
+// dt, dd { display: inline-block; padding: 12px } and
+// dt { width: 130px; white-space: nowrap; text-align: end }.  It
+// bleeds into every <dl> DBDoctor renders on the settings page and
+// silently breaks grid/flex list layouts (stray padding, 130px label
+// columns).  Neutralise it once here; components style their lists
+// from a clean slate.  Class-level specificity keeps this above the
+// bare-element rules but below any scoped component rule.
+.dbdoctor-app dl,
+.dbdoctor-app dt,
+.dbdoctor-app dd {
+	display: block;
+	width: auto;
+	margin: 0;
+	padding: 0;
+	white-space: normal;
+	text-align: start;
+}
+
+// ── Animation primitives ──────────────────────────────────────
+//
+// Defined globally so any component (mascot, score card, confetti)
+// can reuse them without redefining keyframes.
+
+@keyframes dbd-pulse-ring {
+	0%   { transform: scale(0.92); opacity: 0.55; }
+	60%  { transform: scale(1.10); opacity: 0.10; }
+	100% { transform: scale(1.30); opacity: 0;    }
+}
+
+@keyframes dbd-breathing {
+	0%, 100% { transform: scale(1.00); }
+	50%      { transform: scale(1.03); }
+}
+
+@keyframes dbd-fade-in {
+	from { opacity: 0; transform: translateY(8px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+// Reduced-motion: any animation that pulses, scales, or moves
+// should opt-out via this media query.
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+	}
+}
