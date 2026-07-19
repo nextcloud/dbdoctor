@@ -53,7 +53,7 @@ It is **read-only by default**, **admin-only**, and **never phones home**.
 ## Requirements
 
 - Nextcloud 33–35
-- PHP 8.1 or newer
+- PHP 8.3 or newer
 - MySQL 5.7+ / MariaDB 10.4+ / PostgreSQL 13+
 
 ## Installation

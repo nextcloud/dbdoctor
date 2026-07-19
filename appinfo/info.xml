@@ -41,7 +41,7 @@ The MySQL/MariaDB rule set is ported from phpMyAdmin (GPL-2.0-or-later, compatib
 	<repository type="git">https://github.com/nextcloud/dbdoctor.git</repository>
 
 	<dependencies>
-		<php min-version="8.1"/>
+		<php min-version="8.3"/>
 		<nextcloud min-version="33" max-version="35"/>
 	</dependencies>
 

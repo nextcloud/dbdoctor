@@ -4,7 +4,7 @@
     "type": "project",
     "license": "AGPL-3.0-or-later",
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.3"
     },
     "require-dev": {
         "nextcloud/ocp": "dev-master",
@@ -28,6 +28,9 @@
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true,
+        "platform": {
+            "php": "8.3"
+        },
         "allow-plugins": {
             "composer/package-versions-deprecated": true
         }
