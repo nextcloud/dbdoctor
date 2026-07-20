@@ -46,8 +46,6 @@ class SettingsController extends OCSController {
 
 	/**
 	 * GET /api/v1/settings
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function index(): DataResponse {
 		$this->assertAdmin();
@@ -172,8 +170,6 @@ class SettingsController extends OCSController {
 
 	/**
 	 * GET /api/v1/audit?limit=50
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function audit(int $limit = 50): DataResponse {
 		$this->assertAdmin();

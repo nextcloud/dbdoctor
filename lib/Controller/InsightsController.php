@@ -43,7 +43,6 @@ class InsightsController extends OCSController {
 	 * Polled by the dashboard tiles, so it's rate-limited generously
 	 * rather than left wide open.
 	 */
-	#[NoCSRFRequired]
 	#[UserRateLimit(limit: 60, period: 60)]
 	public function metrics(): DataResponse {
 		$this->assertAdmin();
