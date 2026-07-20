@@ -22,6 +22,7 @@ use OCP\IGroupManager;
 use OCP\IRequest;
 use OCP\IUserSession;
 use OCP\Security\ICredentialsManager;
+use SensitiveParameter;
 
 /**
  * Settings + audit endpoints.
@@ -76,6 +77,7 @@ class SettingsController extends OCSController {
 		?string $user = null,
 		?string $database = null,
 		?string $driver = null,
+		#[SensitiveParameter]
 		?string $password = null, // optional — only stored when present
 		?bool $clearPassword = false,
 	): DataResponse {
@@ -125,6 +127,7 @@ class SettingsController extends OCSController {
 		string $host,
 		int $port,
 		string $user,
+		#[SensitiveParameter]
 		string $password,
 		string $database,
 		string $driver = 'pdo_mysql',
