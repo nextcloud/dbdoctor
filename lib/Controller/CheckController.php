@@ -57,8 +57,6 @@ class CheckController extends OCSController {
 
 	/**
 	 * GET /api/v1/check/latest
-	 *
-	 * @NoCSRFRequired (OCS auto-handles CSRF via OCS-APIRequest header)
 	 */
 	public function latest(): DataResponse {
 		$this->assertAdmin();
@@ -166,8 +164,6 @@ class CheckController extends OCSController {
 	 * chart — the query is intentionally inexpensive but real, so the
 	 * timing reflects parser + planner + result transit, not just a
 	 * round-trip ping.
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function ping(): DataResponse {
 		$this->assertAdmin();
@@ -191,8 +187,6 @@ class CheckController extends OCSController {
 
 	/**
 	 * GET /api/v1/check/history?ruleId=...&days=30
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function history(string $ruleId, int $days = 30): DataResponse {
 		$this->assertAdmin();
@@ -209,8 +203,6 @@ class CheckController extends OCSController {
 	 *
 	 * Envelope-only series (timestamp, score, grade) for the headline
 	 * trend chart — never decodes the stored per-rule JSON.
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function scoreHistory(int $days = 30): DataResponse {
 		$this->assertAdmin();
@@ -227,8 +219,6 @@ class CheckController extends OCSController {
 	 * Runtime fixes DB Doctor applied that no longer hold on the live
 	 * server (typically lost to a restart) — the admin should make these
 	 * permanent in the config file.
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function revertedFixes(): DataResponse {
 		$this->assertAdmin();
