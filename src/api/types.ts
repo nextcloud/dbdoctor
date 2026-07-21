@@ -27,6 +27,8 @@ export interface RuleResult {
 	value: number | null
 	skipReason: string | null
 	apply: ApplyDescriptor | null
+	/** Names behind the numeric value (e.g. affected tables). Absent in history entries recorded before the field existed. */
+	details?: string[] | null
 	docUrl: string | null
 }
 

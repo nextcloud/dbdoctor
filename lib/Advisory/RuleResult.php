@@ -23,6 +23,8 @@ final class RuleResult implements \JsonSerializable {
 
 	/**
 	 * @param array{variable:string,configKey:string,configFile:string,runtimeWritable:bool,recommendedValue:string,note:?string}|null $apply
+	 * @param list<string>|null $details Names behind the numeric value (e.g. the
+	 *        affected tables), shown by the UI alongside the justification.
 	 */
 	public function __construct(
 		public readonly Rule $rule,
@@ -31,6 +33,7 @@ final class RuleResult implements \JsonSerializable {
 		public readonly ?float $value = null,
 		public readonly ?string $skipReason = null,
 		public readonly ?array $apply = null,
+		public readonly ?array $details = null,
 	) {
 	}
 
@@ -53,6 +56,7 @@ final class RuleResult implements \JsonSerializable {
 			'value' => ($this->value !== null && is_finite($this->value)) ? $this->value : null,
 			'skipReason' => $this->skipReason,
 			'apply' => $this->apply,
+			'details' => $this->details,
 			'docUrl' => $this->rule->docUrl,
 		];
 	}

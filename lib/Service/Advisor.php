@@ -201,12 +201,24 @@ class Advisor {
 			}
 		}
 
+		// Optional name list backing the numeric value (e.g. which
+		// tables triggered a count-based rule).  Only attached on
+		// failure — passing rules don't need the extra payload.
+		$details = null;
+		if ($rule->detailsKey !== null) {
+			$list = $snapshot->details[$rule->detailsKey] ?? null;
+			if (is_array($list) && $list !== []) {
+				$details = array_values(array_map('strval', $list));
+			}
+		}
+
 		return new RuleResult(
 			$rule,
 			RuleResult::STATUS_FAIL,
 			justification: $justification,
 			value: $valueFloat,
 			apply: $apply,
+			details: $details,
 		);
 	}
 

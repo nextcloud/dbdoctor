@@ -44,6 +44,15 @@
 			{{ rule.skipReason }}
 		</p>
 
+		<!-- Affected objects (e.g. table names behind a count-based
+			 rule).  The backend caps the list; the count in the
+			 justification above is always the full number. -->
+		<ul v-if="rule.details?.length" class="rule-card__affected" :aria-label="t('dbdoctor', 'Affected tables')">
+			<li v-for="name in rule.details" :key="name">
+				<code>{{ name }}</code>
+			</li>
+		</ul>
+
 		<!-- Recommendation: one-line "how to fix". -->
 		<p v-if="rule.status === 'fail' && rule.recommendation" class="rule-card__recommendation">
 			{{ rule.recommendation }}
@@ -316,6 +325,25 @@ function statusLabel(s: RuleStatus): string {
 		&--skipped {
 			color: var(--color-text-maxcontrast);
 			font-style: italic;
+		}
+	}
+
+	&__affected {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+
+		code {
+			display: inline-block;
+			padding: 2px 8px;
+			border-radius: var(--border-radius);
+			background-color: var(--color-background-dark);
+			font-family: var(--font-monospace, monospace);
+			font-size: 12px;
+			color: var(--color-main-text);
 		}
 	}
 

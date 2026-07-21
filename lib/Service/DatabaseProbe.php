@@ -33,6 +33,14 @@ use Psr\Log\LoggerInterface;
  * snapshot.
  */
 class DatabaseProbe {
+	/**
+	 * Cap for name lists attached to a snapshot as details (e.g. the
+	 * tables behind the seq-scan count).  The numeric metric always
+	 * carries the full count; the list is illustrative, and results are
+	 * persisted per run so unbounded lists would bloat the history rows.
+	 */
+	private const MAX_DETAIL_ITEMS = 8;
+
 	public function __construct(
 		private IDBConnection $defaultConnection,
 		private IConfig $config,
@@ -167,6 +175,7 @@ class DatabaseProbe {
 				$base->status,
 				$base->variables,
 				$base->derived + $ncFacts,
+				$base->details,
 			);
 		} finally {
 			$this->closeIfOverride($conn);
@@ -254,11 +263,21 @@ class DatabaseProbe {
 		);
 
 		// "Have any user tables ever benefitted from an index?"  We
-		// flag tables with > 1M sequential scans and zero index scans.
-		$status['tables_without_index_use'] = (int)$this->scalar(
+		// flag tables with > 1M sequential scans and zero index scans,
+		// and keep the worst offenders' names so the rule card can show
+		// which tables to look at instead of just a count.
+		$seqScanTables = $this->all(
 			$conn,
-			'SELECT COUNT(*) FROM pg_stat_user_tables WHERE seq_scan > 1000000 AND idx_scan = 0',
+			'SELECT relname FROM pg_stat_user_tables WHERE seq_scan > 1000000 AND idx_scan = 0 ORDER BY seq_scan DESC',
 		);
+		$status['tables_without_index_use'] = count($seqScanTables);
+		$details = [];
+		if ($seqScanTables !== []) {
+			$names = array_map(static fn (array $row): string => (string)$row['relname'], $seqScanTables);
+			$details['tables_without_index_use'] = count($names) > self::MAX_DETAIL_ITEMS
+				? array_slice($names, 0, self::MAX_DETAIL_ITEMS)
+				: $names;
+		}
 
 		// "Variables"-equivalent: pg_settings.
 		$variables = [];
@@ -274,7 +293,7 @@ class DatabaseProbe {
 			'cache_hit_ratio' => $total > 0 ? $blksHit / $total : 1.0,
 		];
 
-		return new Snapshot(Snapshot::FLAVOUR_PGSQL, $version, $status, $variables, $derived);
+		return new Snapshot(Snapshot::FLAVOUR_PGSQL, $version, $status, $variables, $derived, $details);
 	}
 
 	// ── Connection plumbing ─────────────────────────────────────────

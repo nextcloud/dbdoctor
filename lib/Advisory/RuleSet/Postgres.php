@@ -97,10 +97,14 @@ final class Postgres implements RuleSet {
 			formula: 'tables_without_index_use',
 			test: 'value > 0',
 			issue: 'Some tables have many sequential scans and no index scans, suggesting a missing index.',
-			recommendation: 'Identify the affected tables via pg_stat_user_tables and add appropriate indexes.',
+			recommendation: 'Add appropriate indexes to the affected tables (pg_stat_user_tables shows the full scan statistics).',
 			justification: '%s table(s) have > 1M sequential scans without any index scans.',
 			justificationFormula: 'value',
 			requires: ['tables_without_index_use'],
+			// The probe records the offending table names next to the
+			// count; showing them saves the admin the pg_stat_user_tables
+			// round-trip the recommendation would otherwise require.
+			detailsKey: 'tables_without_index_use',
 		);
 
 		$rules[] = new Rule(

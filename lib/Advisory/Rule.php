@@ -43,6 +43,9 @@ final class Rule {
 	 * @param ApplyDescriptor|null $apply Optional applicator for runtime-writable variables.
 	 * @param list<string> $requires Snapshot keys the rule reads (status / variables names).
 	 * @param string|null $docUrl Optional "learn more" link shown on the rule card.
+	 * @param string|null $detailsKey Optional key into the snapshot's details map;
+	 *        when the rule fails, the named list (e.g. affected table names) is
+	 *        attached to the result for the UI to show alongside the justification.
 	 */
 	public function __construct(
 		public readonly string $id,
@@ -58,6 +61,7 @@ final class Rule {
 		public readonly ?ApplyDescriptor $apply = null,
 		public readonly array $requires = [],
 		public readonly ?string $docUrl = null,
+		public readonly ?string $detailsKey = null,
 	) {
 	}
 }
