@@ -35,6 +35,12 @@ final class Snapshot {
 	 * @param array<string, scalar|null> $status
 	 * @param array<string, scalar|null> $variables
 	 * @param array<string, scalar|null> $derived
+	 * @param array<string, list<string>> $details Non-scalar facts that
+	 *        can't live in the expression context (which is numbers-only):
+	 *        lists of names backing a numeric metric, keyed by the same
+	 *        name as that metric (e.g. the table names behind the
+	 *        `tables_without_index_use` count).  Rules opt in via
+	 *        {@see \OCA\DBDoctor\Advisory\Rule::$detailsKey}.
 	 */
 	public function __construct(
 		public readonly string $flavour,
@@ -42,6 +48,7 @@ final class Snapshot {
 		public readonly array $status,
 		public readonly array $variables,
 		public readonly array $derived,
+		public readonly array $details = [],
 	) {
 	}
 
