@@ -27,8 +27,9 @@ use Psr\Log\LoggerInterface;
  *  - validateValue rejects every shape we expect it to reject before
  *    any literal-rendering happens;
  *  - the SQL that ends up in executeStatement matches the literal-form
- *    the corresponding variable expects (ON/OFF unquoted, byte-suffix
- *    numerics unquoted, enums + Postgres byte strings routed through
+ *    the corresponding variable expects (ON/OFF unquoted, K/M/G byte
+ *    suffixes expanded to plain bytes — SET GLOBAL doesn't accept
+ *    suffix literals — enums + Postgres byte strings routed through
  *    DBAL's quote()).
  */
 final class ApplyServiceTest extends TestCase {
@@ -133,6 +134,7 @@ final class ApplyServiceTest extends TestCase {
 			'slow_query_log out of range' => [Snapshot::FLAVOUR_MYSQL,   'slow_query_log',      '2'],
 			'work_mem with junk suffix'   => [Snapshot::FLAVOUR_PGSQL,   'work_mem',            "64MB' OR 1=1"],
 			'random_page_cost negative'   => [Snapshot::FLAVOUR_PGSQL,   'random_page_cost',    '-1.5'],
+			'byte-suffix int overflow'    => [Snapshot::FLAVOUR_MYSQL,   'innodb_buffer_pool_size', '99999999999999999G'],
 		];
 	}
 
@@ -155,10 +157,13 @@ final class ApplyServiceTest extends TestCase {
 	 */
 	public static function mysqlRendering(): array {
 		return [
+			// SET GLOBAL does not accept K/M/G suffix literals (those are
+			// option-file syntax only), so suffixed values must arrive at
+			// the server expanded to plain bytes.
 			'plain int'                  => ['max_connections',         '250',     '250'],
-			'byte-suffix M'              => ['innodb_buffer_pool_size', '128M',    '128M'],
-			'byte-suffix G'              => ['innodb_buffer_pool_size', '2G',      '2G'],
-			'byte-suffix lowercase k'    => ['key_buffer_size',         '512k',    '512k'],
+			'byte-suffix M → bytes'      => ['innodb_buffer_pool_size', '128M',    '134217728'],
+			'byte-suffix G → bytes'      => ['innodb_buffer_pool_size', '2G',      '2147483648'],
+			'byte-suffix lowercase k'    => ['key_buffer_size',         '512k',    '524288'],
 			'on/off keyword ON'          => ['slow_query_log',          'ON',      'ON'],
 			'on/off keyword OFF'         => ['slow_query_log',          'OFF',     'OFF'],
 			'on/off numeric → keyword'   => ['slow_query_log',          '1',       'ON'],

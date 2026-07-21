@@ -136,6 +136,16 @@ final class ApplyService {
 
 				$this->validateValue($variable, $value);
 
+				if ($flavour !== Snapshot::FLAVOUR_PGSQL) {
+					// MySQL/MariaDB accept K/M/G byte suffixes only in
+					// option files and on the command line — never in SET
+					// statements (the manual: suffixes "can be used when
+					// setting a variable at server startup, but not with
+					// SET").  Expand to plain bytes before rendering; an
+					// overflow is a validation failure, not a server one.
+					$value = $this->expandByteSuffix($value);
+				}
+
 				// Read pre-change value for the audit log.
 				$oldValue = $this->readGlobal($conn, $variable, $flavour);
 
@@ -203,6 +213,31 @@ final class ApplyService {
 		$conn->executeStatement(
 			'SET GLOBAL `' . $variable . '` = ' . $this->literal($conn, $variable, $value),
 		);
+	}
+
+	/**
+	 * Expand a MySQL-style byte-suffix value (`512K`, `128M`, `2G`) to
+	 * a plain byte count.  Values without a suffix pass through
+	 * unchanged.  Only called on the MySQL/MariaDB path — Postgres unit
+	 * strings (`64MB`, `16384kB`) are valid in ALTER SYSTEM as quoted
+	 * literals and must not be rewritten.
+	 */
+	private function expandByteSuffix(string $value): string {
+		$value = trim($value);
+		if (!preg_match('/^(\d+)([KMG])$/i', $value, $m)) {
+			return $value;
+		}
+		$multiplier = match (strtoupper($m[2])) {
+			'K' => 1024,
+			'M' => 1024 ** 2,
+			'G' => 1024 ** 3,
+		};
+		$bytes = (int)$m[1] * $multiplier;
+		if (!is_int($bytes)) {
+			// int overflow degrades to float in PHP.
+			throw new \InvalidArgumentException("Value '$value' is too large.");
+		}
+		return (string)$bytes;
 	}
 
 	private function applyPostgres(Connection|IDBConnection $conn, string $variable, string $value): void {
@@ -304,11 +339,12 @@ final class ApplyService {
 	 * Strategy:
 	 *   - on/off keywords: emit the bare keyword (ON / OFF) — neither MySQL
 	 *     nor Postgres accepts these as quoted strings in this context.
-	 *   - everything that is not a pure number (or MySQL byte-suffix
-	 *     numeric literal): delegate to DBAL's quote(), which honours the
+	 *   - pure numerics: emit as-is, having already passed an anchored
+	 *     regex in validateValue().  MySQL byte-suffix values (128M) have
+	 *     been expanded to plain bytes by expandByteSuffix() before this
+	 *     point — SET GLOBAL does not accept suffix literals.
+	 *   - everything else: delegate to DBAL's quote(), which honours the
 	 *     server's NO_BACKSLASH_ESCAPES / standard_conforming_strings mode.
-	 *   - pure numeric / numeric-with-K|M|G suffix: emit as-is, having
-	 *     already passed an anchored regex in validateValue().
 	 *
 	 * No raw single-quote concatenation lives in this method any more.
 	 */
@@ -320,11 +356,7 @@ final class ApplyService {
 			return $upper === '1' ? 'ON' : ($upper === '0' ? 'OFF' : $upper);
 		}
 
-		// MySQL accepts byte-suffix numeric literals (e.g. 128M) directly
-		// in SET GLOBAL syntax — quoting them would force a string→int
-		// coercion path on the server.  These shapes are tightly validated
-		// upstream so emitting them as-is is safe.
-		if (preg_match('/^\d+[KMG]?$/i', $value) || preg_match('/^\d+(\.\d+)?$/', $value)) {
+		if (preg_match('/^\d+(\.\d+)?$/', $value)) {
 			return $value;
 		}
 
