@@ -7,7 +7,7 @@
 		<!-- ── Header row: title + run-now button ─────────────────── -->
 		<header class="dashboard__header">
 			<div class="dashboard__title">
-				<AppIcon :size="40" class="dashboard__title-icon" />
+				<AppIcon :size="52" class="dashboard__title-icon" />
 				<div>
 					<h1>{{ t('dbdoctor', 'DB Doctor') }}</h1>
 					<p class="dashboard__tagline">
