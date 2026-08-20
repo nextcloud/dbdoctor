@@ -3,7 +3,6 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 SPDX-License-Identifier: GPL-3.0-or-later
 SPDX-License-Identifier: ISC
 SPDX-License-Identifier: MIT
-SPDX-License-Identifier: undefined
 SPDX-FileCopyrightText: @nextcloud/dialogs developers
 SPDX-FileCopyrightText: Anthony Fu <https://github.com/antfu>
 SPDX-FileCopyrightText: David Clark
@@ -18,7 +17,6 @@ SPDX-FileCopyrightText: Nextcloud GmbH and Nextcloud contributors
 SPDX-FileCopyrightText: Rob Cresswell <robcresswell@pm.me>
 SPDX-FileCopyrightText: Varun A P
 SPDX-FileCopyrightText: atomiks
-SPDX-FileCopyrightText: dbdoctor developers
 SPDX-FileCopyrightText: debounce developers
 SPDX-FileCopyrightText: escape-html developers
 
@@ -94,7 +92,7 @@ This file is generated from multiple sources. Included packages:
 	- license: MIT
 - dbdoctor
 	- version: 0.1.0
-	- license: undefined
+	- license: AGPL-3.0-or-later
 - debounce
 	- version: 3.0.0
 	- license: MIT
