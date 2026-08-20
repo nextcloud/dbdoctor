@@ -453,8 +453,7 @@ class DatabaseProbe {
 	 */
 	public function all(Connection|IDBConnection $conn, string $sql): array {
 		if ($conn instanceof Connection) {
-			$rows = $conn->fetchAllAssociative($sql);
-			return array_values($rows);
+			return $conn->fetchAllAssociative($sql);
 		}
 		$result = $conn->prepare($sql)->execute();
 		$rows = [];
