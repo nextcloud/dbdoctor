@@ -28,7 +28,7 @@ PHP:
 ```bash
 composer install
 composer test        # phpunit --configuration tests/phpunit.xml
-composer psalm       # static analysis — informational, see below
+composer psalm       # static analysis — enforcing, must stay clean
 vendor/bin/phpunit -c tests/phpunit.xml tests/Unit/Service/ScoreTest.php   # single test class
 vendor/bin/phpunit -c tests/phpunit.xml --filter testMethodName            # single test method
 ```
@@ -36,9 +36,10 @@ vendor/bin/phpunit -c tests/phpunit.xml --filter testMethodName            # sin
 **PHP tests only run when the repo is checked out inside a Nextcloud server tree at
 `<server>/apps/dbdoctor`.** `tests/bootstrap.php` resolves `OCP\` classes from
 `../../../lib/public/` and optionally loads `../../../3rdparty/autoload.php`; CI
-(`.github/workflows/ci.yml`) reproduces exactly this layout (PHP 8.3 + 8.4 matrix). Psalm runs
-with `continue-on-error` because `NextcloudSchema` references private `OC\DB` classes that the
-OCP stubs don't ship — don't chase those specific errors.
+(`.github/workflows/ci.yml`) reproduces exactly this layout (PHP 8.3 + 8.4 matrix). Psalm is
+enforcing; classes the surrounding server provides at runtime (Doctrine DBAL, private `OC\DB`)
+are stubbed in `tests/stubs/server.phpstub` — extend that stub when code starts using a
+server-side API psalm can't resolve.
 
 ## Architecture
 

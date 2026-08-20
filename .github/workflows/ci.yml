@@ -55,11 +55,10 @@ jobs:
         working-directory: server/apps/dbdoctor
         run: composer test
 
-  # Psalm is informational for now: the Nextcloud-schema probe references
-  # a couple of private OC\DB classes that psalm's OCP stubs don't ship.
+  # Classes the surrounding server provides at runtime (Doctrine DBAL,
+  # private OC\DB) are stubbed in tests/stubs/server.phpstub.
   psalm:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Check out Nextcloud server
         uses: actions/checkout@v4
