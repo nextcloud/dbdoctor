@@ -60,6 +60,12 @@ SPDX-FileCopyrightText = [
 SPDX-License-Identifier = "AGPL-3.0-or-later"
 
 [[annotations]]
+path = "CLAUDE.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
 path = [
     "img/app.svg",
     "img/app-color.svg",
