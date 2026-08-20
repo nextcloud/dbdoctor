@@ -1,0 +1,109 @@
+<?php
+/**
+ * SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+/**
+ * Psalm stubs for classes the surrounding Nextcloud server provides at
+ * runtime — Doctrine DBAL from the server's 3rdparty tree and the
+ * private OC\DB classes — which the nextcloud/ocp dev package doesn't
+ * ship. Only the members this app touches are declared.
+ */
+
+namespace Doctrine\DBAL;
+
+class Connection {
+	public function connect(): bool {}
+
+	public function close(): void {}
+
+	/** @param list<mixed> $params */
+	public function fetchOne(string $query, array $params = []): mixed {}
+
+	/**
+	 * @param list<mixed> $params
+	 * @return array<string, mixed>|false
+	 */
+	public function fetchAssociative(string $query, array $params = []): array|false {}
+
+	/**
+	 * @param list<mixed> $params
+	 * @return list<array<string, mixed>>
+	 */
+	public function fetchAllAssociative(string $query, array $params = []): array {}
+
+	/**
+	 * @param list<mixed> $params
+	 * @return array<mixed, mixed>
+	 */
+	public function fetchAllKeyValue(string $query, array $params = []): array {}
+
+	/** @param list<mixed> $params */
+	public function executeStatement(string $sql, array $params = []): int|string {}
+
+	public function quote(mixed $value): mixed {}
+}
+
+class DriverManager {
+	/** @param array<string, mixed> $params */
+	public static function getConnection(array $params): Connection {}
+}
+
+namespace Doctrine\DBAL\Types;
+
+class Types {
+	public const BIGINT = 'bigint';
+	public const BOOLEAN = 'boolean';
+	public const INTEGER = 'integer';
+	public const STRING = 'string';
+	public const TEXT = 'text';
+}
+
+namespace Doctrine\DBAL\Schema;
+
+class Column {}
+
+class Index {}
+
+class Table {
+	/** @param array<string, mixed> $options */
+	public function addColumn(string $name, string $typeName, array $options = []): Column {}
+
+	/** @param list<string> $columnNames */
+	public function setPrimaryKey(array $columnNames, ?string $indexName = null): self {}
+
+	/** @param list<string> $columnNames */
+	public function addIndex(array $columnNames, ?string $indexName = null): self {}
+
+	public function hasColumn(string $name): bool {}
+
+	public function hasIndex(string $indexName): bool {}
+
+	public function getPrimaryKey(): ?Index {}
+}
+
+class Schema {
+	public function hasTable(string $name): bool {}
+
+	public function getTable(string $name): Table {}
+
+	public function createTable(string $name): Table {}
+
+	public function dropTable(string $name): self {}
+}
+
+namespace OC\DB;
+
+use Doctrine\DBAL\Schema\Table;
+
+class Connection extends \Doctrine\DBAL\Connection {
+}
+
+class SchemaWrapper {
+	public function __construct(Connection $connection) {}
+
+	public function hasTable(string $tableName): bool {}
+
+	public function getTable(string $tableName): Table {}
+}

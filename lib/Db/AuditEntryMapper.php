@@ -31,7 +31,7 @@ class AuditEntryMapper extends QBMapper {
 			->from(self::TABLE)
 			->orderBy('applied_at', 'DESC')
 			->setMaxResults($limit);
-		return array_values($this->findEntities($qb));
+		return $this->findEntities($qb);
 	}
 
 	/**

@@ -46,7 +46,7 @@ final class Score {
 				$counts['ok']++;
 				continue;
 			}
-			$counts[$r->rule->severity] = ($counts[$r->rule->severity] ?? 0) + 1;
+			$counts[$r->rule->severity]++;
 		}
 
 		$score = 100

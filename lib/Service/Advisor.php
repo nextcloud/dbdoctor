@@ -145,7 +145,7 @@ class Advisor {
 			);
 		}
 
-		$valueFloat = is_bool($value) ? ($value ? 1.0 : 0.0) : (float)$value;
+		$valueFloat = is_bool($value) ? ($value ? 1.0 : 0.0) : $value;
 
 		// `test` is evaluated against the same context augmented with
 		// `value`.  phpMyAdmin's rules consistently reference `value`
@@ -208,7 +208,7 @@ class Advisor {
 		if ($rule->detailsKey !== null) {
 			$list = $snapshot->details[$rule->detailsKey] ?? null;
 			if (is_array($list) && $list !== []) {
-				$details = array_values(array_map('strval', $list));
+				$details = array_map('strval', $list);
 			}
 		}
 
@@ -262,7 +262,7 @@ class Advisor {
 		foreach ($parts as $part) {
 			try {
 				$v = $this->evaluator->evaluate($part, $ctx);
-				$values[] = is_bool($v) ? ($v ? 'true' : 'false') : $this->formatNumber((float)$v);
+				$values[] = is_bool($v) ? ($v ? 'true' : 'false') : $this->formatNumber($v);
 			} catch (ExpressionException) {
 				$values[] = '?';
 			}

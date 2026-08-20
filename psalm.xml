@@ -22,6 +22,6 @@
 		<directory name="vendor"/>
 	</extraFiles>
 	<stubs>
-		<file name="vendor/nextcloud/ocp/stubs.php" preloadClasses="true"/>
+		<file name="tests/stubs/server.phpstub"/>
 	</stubs>
 </psalm>

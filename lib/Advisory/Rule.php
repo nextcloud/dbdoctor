@@ -33,7 +33,7 @@ final class Rule {
 	 * @param string $id Stable identifier; for ports of phpMyAdmin rules this matches the upstream id verbatim.
 	 * @param string $name Short human title.
 	 * @param string $category Visual grouping ("Performance" | "Memory" | …).
-	 * @param string $severity One of SEVERITY_*.
+	 * @param self::SEVERITY_* $severity One of SEVERITY_*.
 	 * @param string $formula Expression yielding the rule's primary numeric `value`.
 	 * @param string $test Boolean expression — when it returns true, the rule is considered failed.
 	 * @param string $issue One-sentence English description of what's wrong when the rule fails.

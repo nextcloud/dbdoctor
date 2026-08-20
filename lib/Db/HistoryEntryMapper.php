@@ -51,7 +51,7 @@ class HistoryEntryMapper extends QBMapper {
 		if ($flavour !== null) {
 			$qb->andWhere($qb->expr()->eq('db_flavour', $qb->createNamedParameter($flavour)));
 		}
-		return array_values($this->findEntities($qb));
+		return $this->findEntities($qb);
 	}
 
 	/**

@@ -57,9 +57,9 @@ final class ExpressionEvaluator {
 			'min' => static fn(float ...$args): float => count($args) === 0 ? 0.0 : min($args),
 			'max' => static fn(float ...$args): float => count($args) === 0 ? 0.0 : max($args),
 			'abs' => static fn(float $x): float => abs($x),
-			'ceil' => static fn(float $x): float => (float)ceil($x),
-			'floor' => static fn(float $x): float => (float)floor($x),
-			'round' => static fn(float $x): float => (float)round($x),
+			'ceil' => static fn(float $x): float => ceil($x),
+			'floor' => static fn(float $x): float => floor($x),
+			'round' => static fn(float $x): float => round($x),
 		];
 	}
 
@@ -142,7 +142,7 @@ final class ExpressionEvaluator {
 			}
 
 			// Single-character operators
-			if (str_contains('+-*/%<>=()!?,:', $c)) {
+			if (strpbrk($c, '+-*/%<>=()!?,:') !== false) {
 				$tokens[] = [$c, $c];
 				$i++;
 				continue;
@@ -168,6 +168,10 @@ final class ExpressionEvaluator {
 		return $this->parseTernary($tokens, $pos, $ctx);
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseTernary(array $tokens, int &$pos, array $ctx): float|bool {
 		$cond = $this->parseOr($tokens, $pos, $ctx);
 		if ($this->peek($tokens, $pos) === '?') {
@@ -180,6 +184,10 @@ final class ExpressionEvaluator {
 		return $cond;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseOr(array $tokens, int &$pos, array $ctx): float|bool {
 		$left = $this->parseAnd($tokens, $pos, $ctx);
 		while (in_array($this->peek($tokens, $pos), ['||', 'OR'], true)) {
@@ -190,6 +198,10 @@ final class ExpressionEvaluator {
 		return $left;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseAnd(array $tokens, int &$pos, array $ctx): float|bool {
 		$left = $this->parseEquality($tokens, $pos, $ctx);
 		while (in_array($this->peek($tokens, $pos), ['&&', 'AND'], true)) {
@@ -200,10 +212,13 @@ final class ExpressionEvaluator {
 		return $left;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseEquality(array $tokens, int &$pos, array $ctx): float|bool {
 		$left = $this->parseRelational($tokens, $pos, $ctx);
-		while (in_array($this->peek($tokens, $pos), ['==', '!='], true)) {
-			$op = $tokens[$pos][0];
+		while (in_array($op = $this->peek($tokens, $pos), ['==', '!='], true)) {
 			$pos++;
 			$right = $this->parseRelational($tokens, $pos, $ctx);
 			$lf = $this->toFloat($left);
@@ -216,10 +231,13 @@ final class ExpressionEvaluator {
 		return $left;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseRelational(array $tokens, int &$pos, array $ctx): float|bool {
 		$left = $this->parseAdditive($tokens, $pos, $ctx);
-		while (in_array($this->peek($tokens, $pos), ['<', '<=', '>', '>='], true)) {
-			$op = $tokens[$pos][0];
+		while (in_array($op = $this->peek($tokens, $pos), ['<', '<=', '>', '>='], true)) {
 			$pos++;
 			$right = $this->parseAdditive($tokens, $pos, $ctx);
 			$lf = $this->toFloat($left);
@@ -234,10 +252,13 @@ final class ExpressionEvaluator {
 		return $left;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseAdditive(array $tokens, int &$pos, array $ctx): float|bool {
 		$left = $this->parseMultiplicative($tokens, $pos, $ctx);
-		while (in_array($this->peek($tokens, $pos), ['+', '-'], true)) {
-			$op = $tokens[$pos][0];
+		while (in_array($op = $this->peek($tokens, $pos), ['+', '-'], true)) {
 			$pos++;
 			$right = $this->parseMultiplicative($tokens, $pos, $ctx);
 			$lf = $this->toFloat($left);
@@ -247,10 +268,13 @@ final class ExpressionEvaluator {
 		return $left;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseMultiplicative(array $tokens, int &$pos, array $ctx): float|bool {
 		$left = $this->parsePower($tokens, $pos, $ctx);
-		while (in_array($this->peek($tokens, $pos), ['*', '/', '%'], true)) {
-			$op = $tokens[$pos][0];
+		while (in_array($op = $this->peek($tokens, $pos), ['*', '/', '%'], true)) {
 			$pos++;
 			$right = $this->parsePower($tokens, $pos, $ctx);
 			$lf = $this->toFloat($left);
@@ -268,6 +292,10 @@ final class ExpressionEvaluator {
 		return $left;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parsePower(array $tokens, int &$pos, array $ctx): float|bool {
 		$left = $this->parseUnary($tokens, $pos, $ctx);
 		if ($this->peek($tokens, $pos) === '**') {
@@ -279,6 +307,10 @@ final class ExpressionEvaluator {
 		return $left;
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parseUnary(array $tokens, int &$pos, array $ctx): float|bool {
 		$op = $this->peek($tokens, $pos);
 		if ($op === '-' || $op === '+' || $op === '!') {
@@ -293,6 +325,10 @@ final class ExpressionEvaluator {
 		return $this->parsePrimary($tokens, $pos, $ctx);
 	}
 
+	/**
+	 * @param list<array{0:string,1:string}> $tokens
+	 * @param array<string, scalar|null> $ctx
+	 */
 	private function parsePrimary(array $tokens, int &$pos, array $ctx): float|bool {
 		$type = $this->peek($tokens, $pos);
 		if ($type === null) {
@@ -349,22 +385,17 @@ final class ExpressionEvaluator {
 			if (is_numeric($val)) {
 				return (float)$val;
 			}
-			// Strings are accepted when they parse as numbers, or when
-			// they are one of MySQL's boolean spellings.  MySQL/MariaDB
-			// return slow_query_log, log_bin, etc. as 'ON'/'OFF' rather
-			// than 1/0; phpMyAdmin's advisor rules treat them as numeric.
-			if (is_string($val)) {
-				if (is_numeric($val)) {
-					return (float)$val;
-				}
-				$bool = match (strtoupper($val)) {
-					'ON', 'YES', 'TRUE' => 1.0,
-					'OFF', 'NO', 'FALSE', '' => 0.0,
-					default => null,
-				};
-				if ($bool !== null) {
-					return $bool;
-				}
+			// Remaining strings are accepted when they are one of MySQL's
+			// boolean spellings.  MySQL/MariaDB return slow_query_log,
+			// log_bin, etc. as 'ON'/'OFF' rather than 1/0; phpMyAdmin's
+			// advisor rules treat them as numeric.
+			$bool = match (strtoupper($val)) {
+				'ON', 'YES', 'TRUE' => 1.0,
+				'OFF', 'NO', 'FALSE', '' => 0.0,
+				default => null,
+			};
+			if ($bool !== null) {
+				return $bool;
 			}
 			throw new ExpressionException("Identifier '$name' is not numeric");
 		}
