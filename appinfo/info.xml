@@ -23,7 +23,7 @@ DB Doctor is read-only by default, admin-only, and never phones home.
 The MySQL/MariaDB rule set is ported from phpMyAdmin (GPL-2.0-or-later, compatible upward). The PostgreSQL rules are original to DB Doctor.
 	]]></description>
 
-	<version>1.0.0</version>
+	<version>1.1.0-dev.0</version>
 	<licence>AGPL-3.0-or-later</licence>
 	<author mail="frank@nextcloud.com">Frank Karlitschek</author>
 
@@ -41,8 +41,7 @@ The MySQL/MariaDB rule set is ported from phpMyAdmin (GPL-2.0-or-later, compatib
 	<repository type="git">https://github.com/nextcloud/dbdoctor.git</repository>
 
 	<dependencies>
-		<php min-version="8.3"/>
-		<nextcloud min-version="33" max-version="35"/>
+		<nextcloud min-version="36" max-version="36"/>
 	</dependencies>
 
 	<background-jobs>
