@@ -7,7 +7,7 @@
         "php": ">=8.3"
     },
     "require-dev": {
-        "nextcloud/ocp": "dev-master",
+        "nextcloud/ocp": "dev-stable35",
         "phpunit/phpunit": "^10.0",
         "vimeo/psalm": "^5.0"
     },
