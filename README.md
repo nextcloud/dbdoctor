@@ -3,6 +3,10 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
+
+>[!IMPORTANT]
+> This app was merged into https://github.com/nextcloud/serverinfo
+
 <p align="center">
   <img src="img/app-color.svg" alt="DB Doctor" width="96" height="96">
 </p>
